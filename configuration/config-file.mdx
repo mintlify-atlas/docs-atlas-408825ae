@@ -1,0 +1,172 @@
+---
+title: "Shell config file: all options reference"
+description: "Complete reference for the illogical-impulse shell JSON config — appearance, bar, sidebar, AI, audio, launcher, notifications, and every other option."
+---
+
+The illogical-impulse shell stores all of its settings in a single JSON file at `~/.config/illogical-impulse/config.json`. The file is created automatically on first run with sensible defaults. Changes are applied live — you do not need to restart the shell for most options.
+
+<Tip>
+  You can also change many settings through the in-shell settings app. Open it with `Super+I` or from the right sidebar settings button.
+</Tip>
+
+## AI
+
+```json
+{
+  "ai": {
+    "systemPrompt": "...",
+    "tool": "functions",
+    "extraModels": []
+  }
+}
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `ai.systemPrompt` | string | (long default) | System prompt sent to the model. Supports `{DISTRO}`, `{DE}`, `{DATETIME}`, `{WINDOWCLASS}` placeholders. |
+| `ai.tool` | string | `"functions"` | Tool mode: `"search"`, `"functions"`, or `"none"`. |
+| `ai.extraModels` | array | `[...]` | Additional custom model definitions. Each entry needs: `api_format`, `endpoint`, `model`, `name`, `requires_key`, `key_id`. |
+
+## Appearance
+
+```json
+{
+  "appearance": {
+    "extraBackgroundTint": true,
+    "fakeScreenRounding": 2,
+    "fonts": { "main": "Google Sans Flex", "monospace": "JetBrains Mono NF" },
+    "transparency": { "enable": false, "backgroundTransparency": 0.11 },
+    "wallpaperTheming": { "enableAppsAndShell": true },
+    "palette": { "type": "auto", "accentColor": "" }
+  }
+}
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `appearance.extraBackgroundTint` | bool | `true` | Add extra tint to background elements. |
+| `appearance.fakeScreenRounding` | int | `2` | `0`=None, `1`=Always, `2`=When not fullscreen. |
+| `appearance.fonts.main` | string | `"Google Sans Flex"` | Main UI font. |
+| `appearance.fonts.numbers` | string | `"Google Sans Flex"` | Font for numbers. |
+| `appearance.fonts.title` | string | `"Google Sans Flex"` | Font for titles. |
+| `appearance.fonts.iconNerd` | string | `"JetBrains Mono NF"` | Nerd font for icons. |
+| `appearance.fonts.monospace` | string | `"JetBrains Mono NF"` | Monospace font for code. |
+| `appearance.fonts.reading` | string | `"Readex Pro"` | Font for readable text blocks. |
+| `appearance.fonts.expressive` | string | `"Space Grotesk"` | Expressive/display font. |
+| `appearance.transparency.enable` | bool | `false` | Enable transparent backgrounds. |
+| `appearance.transparency.automatic` | bool | `true` | Adjust transparency automatically. |
+| `appearance.transparency.backgroundTransparency` | float | `0.11` | Background transparency level (0–1). |
+| `appearance.transparency.contentTransparency` | float | `0.57` | Content transparency level (0–1). |
+| `appearance.wallpaperTheming.enableAppsAndShell` | bool | `true` | Apply wallpaper colors to shell and apps. |
+| `appearance.wallpaperTheming.enableQtApps` | bool | `true` | Apply wallpaper colors to Qt apps. |
+| `appearance.wallpaperTheming.enableTerminal` | bool | `true` | Apply wallpaper colors to terminal. |
+| `appearance.palette.type` | string | `"auto"` | Color scheme variant. Options: `auto`, `scheme-content`, `scheme-expressive`, `scheme-fidelity`, `scheme-fruit-salad`, `scheme-monochrome`, `scheme-neutral`, `scheme-rainbow`, `scheme-tonal-spot`. |
+| `appearance.palette.accentColor` | string | `""` | Override accent color (hex, e.g. `"#ff5500"`). Empty = derive from wallpaper. |
+
+## Bar
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `bar.autoHide.enable` | bool | `false` | Auto-hide the bar when not in use. |
+| `bar.autoHide.hoverRegionWidth` | int | `2` | Pixel width of hover region to reveal bar. |
+| `bar.autoHide.pushWindows` | bool | `false` | Push windows down when bar is visible. |
+| `bar.autoHide.showWhenPressingSuper.enable` | bool | `true` | Show bar when Super is held. |
+| `bar.autoHide.showWhenPressingSuper.delay` | int | `140` | Delay in ms before bar appears. |
+| `bar.bottom` | bool | `false` | Place bar at the bottom instead of top. |
+| `bar.cornerStyle` | int | `0` | `0`=Hug edges, `1`=Floating pill, `2`=Plain rectangle. |
+| `bar.floatStyleShadow` | bool | `true` | Shadow behind floating bar. |
+| `bar.borderless` | bool | `false` | Remove item grouping borders. |
+| `bar.vertical` | bool | `false` | Use a vertical bar layout. |
+| `bar.topLeftIcon` | string | `"spark"` | Icon in top-left. `"distro"` for distro logo, or any icon name. |
+| `bar.screenList` | array | `[]` | Show bar only on these monitors (e.g. `["eDP-1"]`). Empty = all monitors. |
+| `bar.workspaces.shown` | int | `10` | Number of workspace indicators to show. |
+| `bar.workspaces.showAppIcons` | bool | `true` | Show app icons in workspace indicators. |
+| `bar.workspaces.monochromeIcons` | bool | `true` | Use monochrome icons in workspace indicators. |
+| `bar.workspaces.alwaysShowNumbers` | bool | `false` | Always show workspace numbers. |
+| `bar.workspaces.showNumberDelay` | int | `300` | Delay (ms) before showing workspace number on hover. |
+| `bar.workspaces.useNerdFont` | bool | `false` | Use Nerd Font glyphs for workspace indicators. |
+| `bar.resources.alwaysShowCpu` | bool | `true` | Always show CPU usage indicator. |
+| `bar.resources.alwaysShowSwap` | bool | `true` | Always show swap usage indicator. |
+| `bar.resources.cpuWarningThreshold` | int | `90` | CPU % that triggers a warning color. |
+| `bar.resources.memoryWarningThreshold` | int | `95` | RAM % that triggers a warning color. |
+| `bar.resources.swapWarningThreshold` | int | `85` | Swap % that triggers a warning color. |
+| `bar.weather.enable` | bool | `false` | Show weather in the bar. |
+| `bar.weather.enableGPS` | bool | `true` | Use GPS-based location for weather. |
+| `bar.weather.city` | string | `""` | City name when GPS is disabled. |
+| `bar.weather.useUSCS` | bool | `false` | Use imperial units instead of metric. |
+| `bar.weather.fetchInterval` | int | `10` | Weather fetch interval in minutes. |
+| `bar.utilButtons.showScreenSnip` | bool | `true` | Show screen snip button. |
+| `bar.utilButtons.showColorPicker` | bool | `false` | Show color picker button. |
+| `bar.utilButtons.showMicToggle` | bool | `false` | Show microphone mute button. |
+| `bar.utilButtons.showKeyboardToggle` | bool | `true` | Show on-screen keyboard button. |
+| `bar.utilButtons.showDarkModeToggle` | bool | `true` | Show dark/light mode toggle. |
+| `bar.utilButtons.showPerformanceProfileToggle` | bool | `false` | Show performance profile toggle. |
+| `bar.utilButtons.showScreenRecord` | bool | `false` | Show screen record button. |
+| `bar.indicators.notifications.showUnreadCount` | bool | `false` | Show notification unread count badge. |
+| `bar.tooltips.clickToShow` | bool | `false` | Require click to show tooltips (vs hover). |
+
+## Battery
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `battery.low` | int | `20` | Battery % considered low. |
+| `battery.critical` | int | `5` | Battery % considered critical. |
+| `battery.full` | int | `101` | Battery % considered full (101 = never). |
+| `battery.automaticSuspend` | bool | `true` | Auto-suspend when critical. |
+| `battery.suspend` | int | `3` | Battery % that triggers auto-suspend. |
+
+## Sidebar
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `sidebar.keepRightSidebarLoaded` | bool | `true` | Keep right sidebar in memory when closed. |
+| `sidebar.translator.enable` | bool | `false` | Enable the Translator tab in the left sidebar. |
+| `sidebar.translator.delay` | int | `300` | Delay (ms) before sending translation request. |
+| `sidebar.ai.textFadeIn` | bool | `false` | Animate AI response text with a fade-in effect. |
+| `sidebar.quickToggles.style` | string | `"android"` | Quick toggle style: `"android"` or `"classic"`. |
+| `sidebar.quickToggles.android.columns` | int | `5` | Number of columns in android-style toggles. |
+| `sidebar.quickToggles.android.toggles` | array | (default set) | Toggle definitions: each with `size` and `type`. |
+| `sidebar.quickSliders.enable` | bool | `false` | Show quick sliders (volume/brightness). |
+| `sidebar.quickSliders.showVolume` | bool | `true` | Show volume slider. |
+| `sidebar.quickSliders.showBrightness` | bool | `true` | Show brightness slider. |
+| `sidebar.quickSliders.showMic` | bool | `false` | Show microphone slider. |
+| `sidebar.cornerOpen.enable` | bool | `true` | Open sidebar by hovering screen corner. |
+| `sidebar.cornerOpen.cornerRegionWidth` | int | `250` | Width of corner hover region in pixels. |
+| `sidebar.cornerOpen.cornerRegionHeight` | int | `5` | Height of corner hover region in pixels. |
+| `sidebar.booru.allowNsfw` | bool | `false` | Allow NSFW content in the booru tab. |
+| `sidebar.booru.defaultProvider` | string | `"yandere"` | Default booru provider. |
+
+## Dock
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `dock.enable` | bool | `false` | Show the application dock. |
+| `dock.monochromeIcons` | bool | `true` | Use monochrome icons in dock. |
+| `dock.height` | float | `60` | Dock height in pixels. |
+| `dock.hoverToReveal` | bool | `true` | Reveal dock on hover (when hidden). |
+| `dock.pinnedApps` | array | `["org.kde.dolphin", "kitty"]` | App IDs to pin in dock. |
+| `dock.pinnedOnStartup` | bool | `false` | Keep dock pinned/visible on startup. |
+
+## Other options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `notifications.timeout` | int | `7000` | Notification auto-dismiss timeout (ms). |
+| `osd.timeout` | int | `1000` | On-screen display timeout (ms). |
+| `media.filterDuplicatePlayers` | bool | `true` | Filter duplicate MPRIS players. |
+| `calendar.locale` | string | `"en-GB"` | Calendar locale string. |
+| `language.ui` | string | `"auto"` | UI language: `"auto"` or a locale code like `"zh_CN"`. |
+| `launcher.pinnedApps` | array | `[...]` | App IDs pinned in the search launcher. |
+| `updates.enableCheck` | bool | `true` | Check for system package updates. |
+| `updates.checkInterval` | int | `120` | Update check interval in minutes. |
+| `screenSnip.savePath` | string | `""` | Path to save screenshots. Empty = clipboard only. |
+| `screenRecord.savePath` | string | `~/Videos` | Path to save screen recordings. |
+| `sounds.battery` | bool | `false` | Play sound on low battery. |
+| `sounds.pomodoro` | bool | `false` | Play sound on Pomodoro timer events. |
+| `sounds.theme` | string | `"freedesktop"` | Sound theme name. |
+| `policies.ai` | int | `1` | `0`=No AI, `1`=Allow online AI, `2`=Local only. |
+| `policies.weeb` | int | `1` | `0`=No, `1`=Open, `2`=Closet (affects booru tab). |
+
+<Note>
+  Config options for `lock`, `time.pomodoro`, `light.night`, `workSafety`, and `waffles` exist but are less commonly changed. Refer to the in-shell settings app or read `~/.config/quickshell/ii/modules/common/Config.qml` for the full schema.
+</Note>

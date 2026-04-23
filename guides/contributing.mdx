@@ -1,0 +1,121 @@
+---
+title: "Contributing to illogical-impulse"
+description: "Set up a development environment for illogical-impulse, contribute code or translations, and follow the QML code style and PR guidelines."
+---
+
+illogical-impulse welcomes contributions — whether that's bug fixes, new features, translations, or improvements to the Quickshell QML codebase. Before writing a large feature, it's worth opening a GitHub issue to discuss it first so your effort isn't wasted.
+
+## Pull request guidelines
+
+- **One PR per feature or fix.** Do not bundle multiple unrelated changes.
+- **Do not include personal preference changes** (changed defaults, font choices, etc.) in PRs.
+- **Optional features must be gated by config.** If the maintainers wouldn't use it themselves, they may still accept it — but it must be disabled by default and controlled by a config option.
+- **Ask first for large changes.** Open an issue before investing significant time in a big feature.
+
+## Setting up a development environment
+
+### Full setup (recommended)
+
+Install the dotfiles on a separate user account, make your changes in `~/.config/quickshell/ii/`, copy them to a fork, and submit a PR.
+
+### Partial setup (shell only)
+
+If you only need to work on the Quickshell shell — not the full dotfiles — install Hyprland and the development build of Quickshell, then copy just the shell config:
+
+```bash
+# Arch-based systems
+yay -S hyprland quickshell-git
+
+# Copy shell config
+cp -r dots/.config/quickshell ~/.config/quickshell
+```
+
+### Quickshell LSP setup
+
+For proper autocompletion in your editor:
+
+```bash
+touch ~/.config/quickshell/ii/.qmlls.ini
+```
+
+For VSCode: install the official **Qt Qml** extension and set the custom executable path to `/usr/bin/qmlls6` in the extension settings.
+
+## Running the shell for development
+
+<Steps>
+  <Step title="Launch Hyprland">
+    Start Hyprland from a TTY (not the uwsm-managed session, as that can interfere with live reloading).
+  </Step>
+  <Step title="Start Quickshell in a terminal">
+    Open a terminal and run:
+
+    ```bash
+    pkill qs; qs -c ii
+    ```
+
+    This starts the shell with its output in the terminal window so you can see log messages and errors in real time.
+  </Step>
+  <Step title="Edit and reload">
+    Open `~/.config/quickshell/ii` in your editor. The shell reloads live as you save files.
+  </Step>
+</Steps>
+
+## Code style
+
+**Spacing:**
+- Group related properties with blank lines between groups (no double blank lines).
+- Put spaces around operators: `if (condition) { ... }` not `if(condition){...}`.
+
+**Nesting:**
+- Prefer early return to reduce nesting depth:
+
+```qml
+// Good
+if (!condition) return;
+doStuff();
+
+// Avoid
+if (condition) {
+    doStuff();
+}
+```
+
+- Use `component` declarations to create reusable parts within a file instead of deep nesting.
+
+**Dynamic loading:**
+- Use `Loader` for components that aren't always needed, especially those gated by config options.
+- For animated show/hide, use `FadeLoader` and set the `shown` property instead of `visible`.
+
+```qml
+// Example: conditionally load a heavy component
+Loader {
+    active: Config.options.dock.enable
+    sourceComponent: DockComponent {}
+}
+```
+
+## Python contributions
+
+If your change involves Python scripts, use the virtual environment managed by `uv`:
+
+```bash
+# Set up the venv (from the repo root)
+cat sdata/uv/README.md
+```
+
+Do not add Python packages as system dependencies — use the project's `uv` venv.
+
+## Translations
+
+Translation files live at:
+
+```
+dots/.config/quickshell/ii/translations/
+```
+
+See the `tools/` subdirectory for scripts that help extract strings and update translation files. Adding or improving a translation is a great first contribution.
+
+## Community
+
+- **Discord:** [discord.gg/GtdRBXgMwq](https://discord.gg/GtdRBXgMwq) — best place for questions and discussion
+- **GitHub Issues:** for bug reports and feature requests, not support questions

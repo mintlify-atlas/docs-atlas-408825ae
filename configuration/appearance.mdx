@@ -1,0 +1,197 @@
+---
+title: "Appearance: fonts, transparency, rounding, and widgets"
+description: "Customize illogical-impulse fonts, enable transparent backgrounds, adjust screen corner rounding, and configure the background clock and parallax effects."
+---
+
+illogical-impulse gives you fine-grained control over the visual appearance of the shell — from individual font slots to background widget styles. Most of these settings live under the `appearance` and `background` keys in `~/.config/illogical-impulse/config.json`, and all changes apply live without restarting the shell.
+
+## Fonts
+
+The shell uses separate font slots for different contexts. You can set each independently:
+
+```json
+{
+  "appearance": {
+    "fonts": {
+      "main": "Google Sans Flex",
+      "numbers": "Google Sans Flex",
+      "title": "Google Sans Flex",
+      "iconNerd": "JetBrains Mono NF",
+      "monospace": "JetBrains Mono NF",
+      "reading": "Readex Pro",
+      "expressive": "Space Grotesk"
+    }
+  }
+}
+```
+
+| Slot | Default | Used for |
+|------|---------|----------|
+| `main` | Google Sans Flex | General UI labels, sidebar text |
+| `numbers` | Google Sans Flex | Clock digits, numeric indicators |
+| `title` | Google Sans Flex | Headings and window titles |
+| `iconNerd` | JetBrains Mono NF | Nerd Font icon glyphs |
+| `monospace` | JetBrains Mono NF | Code blocks, terminal output |
+| `reading` | Readex Pro | Long-form readable text |
+| `expressive` | Space Grotesk | Decorative / display use |
+
+All listed fonts are installed by the setup script. You can substitute any font available on your system.
+
+## Transparency
+
+```json
+{
+  "appearance": {
+    "transparency": {
+      "enable": false,
+      "automatic": true,
+      "backgroundTransparency": 0.11,
+      "contentTransparency": 0.57
+    }
+  }
+}
+```
+
+Set `enable` to `true` to make shell surfaces transparent. `backgroundTransparency` controls the panel/sidebar background; `contentTransparency` controls inner content areas. Values range from `0` (fully transparent) to `1` (fully opaque).
+
+<Note>
+  Transparency requires a compositor that supports background blur. Hyprland supports this via `decoration.blur` settings in your Hyprland config.
+</Note>
+
+## Screen corner rounding
+
+```json
+{
+  "appearance": {
+    "fakeScreenRounding": 2
+  }
+}
+```
+
+| Value | Effect |
+|-------|--------|
+| `0` | Disabled |
+| `1` | Always active |
+| `2` | Active when not in fullscreen (default) |
+
+This adds decorative rounded corners to the screen edges using a shader overlay.
+
+## Background clock widget
+
+The background clock widget sits on your wallpaper and can be styled as a classic analog `"cookie"` clock or a minimal `"digital"` display:
+
+```json
+{
+  "background": {
+    "widgets": {
+      "clock": {
+        "enable": true,
+        "style": "cookie",
+        "styleLocked": "cookie",
+        "placementStrategy": "leastBusy"
+      }
+    }
+  }
+}
+```
+
+`placementStrategy` options: `"free"` (use x/y coords), `"leastBusy"` (least-occupied screen area), `"mostBusy"` (most-occupied area).
+
+### Cookie (analog) clock options
+
+```json
+{
+  "background": {
+    "widgets": {
+      "clock": {
+        "cookie": {
+          "sides": 14,
+          "dialNumberStyle": "full",
+          "hourHandStyle": "fill",
+          "minuteHandStyle": "medium",
+          "secondHandStyle": "dot",
+          "dateStyle": "bubble",
+          "timeIndicators": true,
+          "hourMarks": false,
+          "dateInClock": true,
+          "constantlyRotate": false
+        }
+      }
+    }
+  }
+}
+```
+
+| Option | Options |
+|--------|---------|
+| `dialNumberStyle` | `"dots"`, `"numbers"`, `"full"`, `"none"` |
+| `hourHandStyle` | `"classic"`, `"fill"`, `"hollow"`, `"hide"` |
+| `minuteHandStyle` | `"classic"`, `"thin"`, `"medium"`, `"bold"`, `"hide"` |
+| `secondHandStyle` | `"dot"`, `"line"`, `"classic"`, `"hide"` |
+| `dateStyle` | `"border"`, `"rect"`, `"bubble"`, `"hide"` |
+
+### Digital clock options
+
+```json
+{
+  "background": {
+    "widgets": {
+      "clock": {
+        "digital": {
+          "adaptiveAlignment": true,
+          "showDate": true,
+          "animateChange": true,
+          "vertical": false,
+          "font": {
+            "family": "Google Sans Flex",
+            "weight": 350,
+            "width": 100,
+            "size": 90,
+            "roundness": 0
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## Parallax wallpaper effect
+
+The parallax effect shifts the wallpaper slightly as you move between workspaces or open sidebars:
+
+```json
+{
+  "background": {
+    "parallax": {
+      "vertical": false,
+      "autoVertical": false,
+      "enableWorkspace": false,
+      "workspaceZoom": 1.07,
+      "enableSidebar": false,
+      "widgetsFactor": 1.2
+    }
+  }
+}
+```
+
+`workspaceZoom` controls how much the wallpaper zooms in to allow room for the parallax shift. A value of `1.07` means 7% larger than the screen.
+
+## Background weather widget
+
+```json
+{
+  "background": {
+    "widgets": {
+      "weather": {
+        "enable": false,
+        "placementStrategy": "free",
+        "x": 400,
+        "y": 100
+      }
+    }
+  }
+}
+```
+
+Enable the weather widget on the background, then configure the actual weather data source under `bar.weather` (the same data feeds both).

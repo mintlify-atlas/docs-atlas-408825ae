@@ -1,0 +1,197 @@
+---
+title: "Troubleshooting illogical-impulse issues"
+description: "Diagnose and fix common illogical-impulse problems — shell not loading, theming failures, AI sidebar errors, notification conflicts, and performance issues."
+---
+
+Most issues with illogical-impulse fall into a handful of categories. Start with the `diagnose` script to collect system information, then work through the relevant section below. For persistent issues, bring the `diagnose` output to the [Discord server](https://discord.gg/GtdRBXgMwq) or open a GitHub issue.
+
+## Run the diagnose script first
+
+From the cloned repository, run:
+
+```bash
+./diagnose
+```
+
+This collects system information, checks for common problems, and prints a summary. Include the output when reporting bugs.
+
+<Warning>
+  Run `diagnose` as your regular user — not with `sudo`. Running as root may produce incorrect results.
+</Warning>
+
+## Common issues
+
+<AccordionGroup>
+  <Accordion title="Shell widgets don't appear after install">
+    The shell may not have started automatically. Try restarting it:
+
+    ```bash
+    # From a terminal or TTY
+    pkill qs; qs -c ii
+    ```
+
+    Or press `Ctrl+Super+R` if Hyprland is running but the shell is crashed.
+
+    Check whether Quickshell is actually running:
+
+    ```bash
+    pgrep -a qs
+    ```
+
+    If it exits immediately, run `qs -c ii` in a terminal and read the error output.
+  </Accordion>
+
+  <Accordion title="Colors and theme are not updating from wallpaper">
+    First check that `matugen` is installed:
+
+    ```bash
+    which matugen
+    ```
+
+    Then try manually triggering a wallpaper switch via `Ctrl+Super+T` in the wallpaper selector. If the selector opens but colors don't change, check whether the selected wallpaper path is valid and readable.
+
+    You can also run the color generation script directly:
+
+    ```bash
+    ~/.config/quickshell/ii/scripts/colors/switchwall.sh /path/to/wallpaper.jpg
+    ```
+
+    Check `appearance.wallpaperTheming.enableAppsAndShell` is `true` in your config.
+  </Accordion>
+
+  <Accordion title="AI sidebar shows no response or API errors">
+    The most common cause is a missing or incorrect API key. In the AI sidebar (open with `Super+A`), type:
+
+    ```
+    /key get
+    ```
+
+    If no key is set, add it:
+
+    ```
+    /key sk-your-api-key-here
+    ```
+
+    For local Ollama models, ensure Ollama is running and the model is pulled:
+
+    ```bash
+    ollama serve
+    ollama pull llama3
+    ```
+
+    Then in the sidebar, switch to the Ollama model:
+
+    ```
+    /model ollama:llama3
+    ```
+
+    Check that `policies.ai` is not set to `0` (which disables AI entirely) in your config.
+  </Accordion>
+
+  <Accordion title="Notifications not appearing">
+    illogical-impulse includes its own notification service. If another daemon (dunst, mako, swaync) is running, they will conflict.
+
+    Enable automatic conflict resolution in your config:
+
+    ```json
+    {
+      "conflictKiller": {
+        "autoKillNotificationDaemons": true
+      }
+    }
+    ```
+
+    Or manually kill the conflicting daemon:
+
+    ```bash
+    pkill dunst
+    pkill mako
+    ```
+
+    Then restart the shell (`Ctrl+Super+R`).
+  </Accordion>
+
+  <Accordion title="Keybinds not working">
+    IPC-based keybinds (most shell keybinds) require Quickshell to be running. Check with:
+
+    ```bash
+    pgrep qs
+    ```
+
+    Most keybinds have a fallback command that runs when Quickshell is down (e.g. `fuzzel` for the launcher). If even those don't work, check `hyprctl binds` to confirm the binds are registered.
+
+    After a shell crash, restart with `Ctrl+Super+R` or:
+
+    ```bash
+    pkill qs; qs -c ii &
+    ```
+  </Accordion>
+
+  <Accordion title="Performance is poor or animations are sluggish">
+    Try these config changes to reduce load:
+
+    ```json
+    {
+      "overview": { "enable": false },
+      "appearance": {
+        "transparency": { "enable": false },
+        "fakeScreenRounding": 0
+      },
+      "resources": { "updateInterval": 5000 },
+      "sidebar": { "keepRightSidebarLoaded": false }
+    }
+    ```
+
+    Also check that hardware acceleration is working for Qt applications — Quickshell uses Qt6 and benefits from GPU rendering.
+  </Accordion>
+
+  <Accordion title="Lock screen not appearing or PAM errors">
+    The built-in lock screen requires PAM to be configured correctly. If you see PAM authentication errors, check that the PAM configuration for `hyprlock` or the shell's lock service is in place.
+
+    Alternatively, switch to `hyprlock` as the lock backend:
+
+    ```json
+    {
+      "lock": {
+        "useHyprlock": true
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Screen translator or OCR produces no output">
+    Both features require `tesseract` with at least one language pack:
+
+    ```bash
+    # Arch
+    sudo pacman -S tesseract tesseract-data-eng
+
+    # Check installed languages
+    tesseract --list-langs
+    ```
+
+    Screen translation also requires `translate-shell`:
+
+    ```bash
+    sudo pacman -S translate-shell
+    ```
+
+    Test `tesseract` directly on a screenshot to isolate whether the issue is OCR or translation:
+
+    ```bash
+    grim /tmp/test.png && tesseract /tmp/test.png stdout
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Getting help
+
+If you cannot resolve an issue with the steps above:
+
+1. Run `./diagnose` and copy the output.
+2. Check the [Discord server](https://discord.gg/GtdRBXgMwq) — it's the fastest way to get help from the community.
+3. For reproducible bugs, open a [GitHub issue](https://github.com/end-4/dots-hyprland/issues) and include the `diagnose` output, your distro, GPU, and a description of what you were doing when the issue occurred.
+
+<Info>
+  The Discord server is for support questions. GitHub Issues are for confirmed bugs and feature requests. Please use the appropriate channel.
+</Info>

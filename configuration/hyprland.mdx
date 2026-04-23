@@ -1,0 +1,123 @@
+---
+title: "Hyprland config: layout, monitors, and overrides"
+description: "How the illogical-impulse Hyprland configuration is organized — sourced defaults, the custom/ override folder, monitor setup, and app variables."
+---
+
+illogical-impulse organizes its Hyprland configuration into a set of sourced files under `~/.config/hypr/`. The main `hyprland.conf` simply sources these files in order. The design is intentional: default files are managed by the project, while you make all your personal changes in the `custom/` folder — which is never overwritten by updates.
+
+## File structure
+
+```
+~/.config/hypr/
+├── hyprland.conf          # Entry point — sources everything else
+├── hyprland/
+│   ├── env.conf           # Environment variables
+│   ├── variables.conf     # App variables ($terminal, $browser, etc.)
+│   ├── execs.conf         # Autostart programs
+│   ├── general.conf       # Window gaps, borders, layouts
+│   ├── rules.conf         # Window rules
+│   ├── colors.conf        # Border colors (auto-updated by theming)
+│   ├── keybinds.conf      # All default keybinds
+│   └── shellOverrides/    # Keybinds that connect to Quickshell IPC
+├── custom/
+│   ├── env.conf           # Your environment variable additions
+│   ├── variables.conf     # Your app variable overrides
+│   ├── execs.conf         # Your autostart additions
+│   ├── general.conf       # Your general setting overrides
+│   ├── rules.conf         # Your window rule additions
+│   └── keybinds.conf      # Your custom keybinds
+├── monitors.conf          # Monitor configuration (nwg-displays compatible)
+├── workspaces.conf        # Workspace-to-monitor assignments
+├── hyprlock.conf          # Lock screen configuration
+└── hypridle.conf          # Idle configuration
+```
+
+<Note>
+  Files in `custom/` are sourced with `noerror` — they are optional. Create them when you need them.
+</Note>
+
+## App variables
+
+Default app assignments are set in `hyprland/variables.conf`. Override them in `custom/variables.conf`:
+
+```ini custom/variables.conf
+$terminal    = kitty -1
+$fileManager = dolphin
+$browser     = firefox
+$codeEditor  = code
+$textEditor  = kate
+$officeSoftware = libreoffice
+$volumeMixer = pavucontrol-qt
+$settingsApp = systemsettings
+$taskManager = plasma-systemmonitor --page-name Processes
+```
+
+These variables are used by the app-launching keybinds (`Super+Enter` for terminal, `Super+E` for file manager, etc.).
+
+## Adding keybinds
+
+Add your own keybinds to `~/.config/hypr/custom/keybinds.conf`:
+
+```ini custom/keybinds.conf
+# Open a browser
+bind = Super, B, exec, firefox
+
+# Float a specific app
+bind = Super+Shift, F, exec, kitty --class floating-term
+
+# Send notification
+bind = Super+Alt, N, exec, notify-send "Test" "Hello from Hyprland"
+```
+
+See the [keybind reference](/features/keybinds) for a full list of the defaults.
+
+## Monitor configuration
+
+Edit `~/.config/hypr/monitors.conf` for monitor layout. illogical-impulse supports [nwg-displays](https://github.com/nwg-piotr/nwg-displays) for a graphical monitor editor.
+
+```ini monitors.conf
+# Example: two monitors, primary on right
+monitor = HDMI-A-1, 1920x1080@60, 0x0, 1
+monitor = eDP-1, 1920x1080@60, 1920x0, 1
+```
+
+Workspace assignments go in `workspaces.conf`.
+
+## Autostart programs
+
+Add programs to launch at Hyprland start in `custom/execs.conf`:
+
+```ini custom/execs.conf
+exec-once = nm-applet
+exec-once = blueman-applet
+exec-once = /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+```
+
+## Window rules
+
+Add window rules in `custom/rules.conf`:
+
+```ini custom/rules.conf
+# Float a specific app
+windowrulev2 = float, class:(org.gnome.Calculator)
+
+# Pin picture-in-picture
+windowrulev2 = pin, title:(Picture-in-Picture)
+windowrulev2 = float, title:(Picture-in-Picture)
+```
+
+## Environment variables
+
+Add environment variables in `custom/env.conf`:
+
+```ini custom/env.conf
+# Nvidia-specific (example)
+env = LIBVA_DRIVER_NAME, nvidia
+env = __GLX_VENDOR_LIBRARY_NAME, nvidia
+```
+
+## Shell overrides
+
+The `hyprland/shellOverrides/` folder contains keybinds that invoke Quickshell via IPC. These are managed by the project and connect keybinds like `Super+A` to the shell's sidebar toggle. You generally do not need to edit these files.
+
+If Quickshell is not running, most of these keybinds fall back to equivalent commands (e.g. `fuzzel` for the launcher).

@@ -1,0 +1,88 @@
+---
+title: "illogical-impulse: What it is and what it isn't"
+description: "A complete overview of illogical-impulse — what the dotfiles include, the software stack, and whether it is the right fit for your system."
+---
+
+illogical-impulse is a collection of configuration files that, in practice, delivers a complete graphical shell for the Hyprland Wayland compositor. At its core is a custom widget system written in QML and powered by Quickshell — covering the status bar, sidebars, workspace overview, search launcher, notifications, and more. Colors across the entire shell are generated automatically from your wallpaper using Material Design 3 color generation via matugen.
+
+<Warning>
+  illogical-impulse is **not** a system setup script. It does not install GPU drivers, configure zram, tune swap, or perform any hardware-level setup. You are expected to have a working Arch, Fedora, Gentoo, or NixOS installation with a functional GPU driver before running the installer.
+</Warning>
+
+## What it is
+
+Technically, illogical-impulse is a set of configuration files. In practice, it is mostly a custom graphical shell that sits on top of Hyprland. The installer handles package installation, user group configuration, service setup, and copying config files into your home directory — but it stops there.
+
+The installer is also transparent: every command is shown on screen before it executes, and you confirm each step. The process is idempotent, so you can safely re-run it to apply updates or restore a misconfigured state.
+
+## What it is not
+
+- **Not a system setup script.** No GPU drivers, no zram, no swap configuration, no display manager setup.
+- **Not a beginner hand-holder.** The project itself notes that if you are new to Linux and choose Hyprland, you are in for a tough ride.
+- **Not cross-compositor.** illogical-impulse is Wayland-only and built specifically for Hyprland. It will not run on X11 or any other compositor.
+
+## Notable features
+
+<CardGroup cols={2}>
+  <Card title="Overview with live previews" icon="layout-dashboard">
+    Press `Super+Tab` to open the workspace overview. It shows all open windows with live previews — not static thumbnails.
+  </Card>
+  <Card title="AI sidebar" icon="sparkles">
+    A built-in AI chat sidebar supports Gemini, Ollama, and OpenAI-compatible endpoints. Access it any time with `Super+A`.
+  </Card>
+  <Card title="Quality-of-life tools" icon="wrench">
+    Screen translation, an anti-flashbang filter, Google Lens integration, a math-capable search bar, and a Shazam-style song recognition tool are all included.
+  </Card>
+  <Card title="Material Design theming" icon="palette">
+    Pick a wallpaper and the entire shell recolors instantly. matugen generates a full Material Design 3 palette from any image — bar, sidebars, lock screen, and notifications all update together.
+  </Card>
+  <Card title="Transparent installation" icon="eye">
+    Every command the installer will run is printed to the terminal before execution. You can confirm each step, skip steps, or abort at any point.
+  </Card>
+  <Card title="Idempotent updates" icon="refresh-cw">
+    Re-running the installer to update or repair your setup is safe. The installer applies only what has changed and backs up conflicting files before overwriting them.
+  </Card>
+</CardGroup>
+
+## Software stack
+
+The shell is built from several upstream projects working together:
+
+| Software | Purpose |
+|---|---|
+| [Hyprland](https://github.com/hyprwm/hyprland) | Wayland compositor — manages and renders all windows |
+| [Quickshell](https://quickshell.outfoxxed.me/) | QtQuick-based widget system powering the bar, sidebars, overview, and more |
+| matugen | Generates a Material Design 3 color palette from your wallpaper |
+| Fish | Default shell, with Starship prompt and eza-based `ls` |
+| Kitty | Default terminal emulator |
+| Fuzzel | Application launcher (also used as a search bar fallback) |
+| wlogout | Session menu (lock, sleep, shutdown, reboot) |
+| hyprlock / hypridle | Lock screen and idle daemon |
+
+A full list of all packages and their roles is maintained in the repository at `sdata/deps-info.md`.
+
+## Supported distributions
+
+Arch Linux is the primary supported distribution and is actively maintained by the core developers. Fedora, Gentoo, and NixOS are supported by the community — their dependency scripts may occasionally lag behind the Arch reference. If you are on a community-supported distribution, check the upstream [discussions board](https://github.com/end-4/dots-hyprland/discussions/2140) before installing.
+
+| Distribution | Status |
+|---|---|
+| Arch Linux | Primary — actively maintained by core developers |
+| Fedora | Community-supported |
+| Gentoo | Community-supported |
+| NixOS | Community-supported (experimental, work in progress) |
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="rocket" href="/installation">
+    Run the one-liner or clone the repo and install illogical-impulse on your system.
+  </Card>
+  <Card title="After installation" icon="flag" href="/post-install">
+    Launch Hyprland, pick a wallpaper, and learn the essential keybinds.
+  </Card>
+</CardGroup>
+
+<Note>
+  Join the community [Discord server](https://discord.gg/GtdRBXgMwq) for support and discussion. For confirmed bugs, open an issue on [GitHub](https://github.com/end-4/dots-hyprland).
+</Note>

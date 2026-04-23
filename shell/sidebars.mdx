@@ -1,0 +1,174 @@
+---
+title: "Left and right sidebars — AI, controls, widgets"
+description: "Everything in the illogical-impulse left and right sidebars: AI chat, translator, quick toggles, sliders, calendar, to-do, and more."
+---
+
+The shell provides two sidebars that slide in from the left and right edges of the screen. The **left sidebar** (`Super+A`) focuses on content generation and lookup, while the **right sidebar** (`Super+N`) is your control center for notifications, quick settings, and productivity widgets.
+
+## Left sidebar
+
+The left sidebar is a tabbed panel. The tabs that appear depend on the feature policies you have configured.
+
+<AccordionGroup>
+  <Accordion title="Intelligence tab (AI chat)">
+    A full-featured AI chat panel backed by any OpenAI-compatible API, Google Gemini, or a local Ollama model. The panel renders Markdown, code blocks with syntax highlighting, LaTeX math expressions, and citation source links. It also supports attaching files and triggering web searches.
+
+    Enabled when `policies.ai` is not `0`.
+  </Accordion>
+  <Accordion title="Translator tab">
+    Type or paste text and have it translated using the `trans` CLI tool. You can configure source and target languages and the translation engine.
+
+    Enabled when `sidebar.translator.enable` is `true`.
+  </Accordion>
+  <Accordion title="Anime / Booru tab">
+    Browse images from booru-style image boards (Yande.re, Konachan, Zerochan, and others). NSFW content is gated behind `sidebar.booru.allowNsfw`.
+
+    Enabled when `policies.weeb` is not `0`. Set to `2` for "closet mode" (tab hidden from the toolbar).
+  </Accordion>
+</AccordionGroup>
+
+### Keyboard shortcuts
+
+| Action | Key |
+|---|---|
+| Toggle left sidebar | `Super+A` |
+| Detach sidebar into a floating window | `Super+Alt+A` |
+| Pin sidebar (reserve screen space) | `Ctrl+P` (while sidebar is focused) |
+| Expand sidebar width | `Ctrl+O` (while sidebar is focused) |
+| Switch tabs | `Ctrl+Page Down` / `Ctrl+Page Up` |
+| Close sidebar | `Escape` |
+
+### Detach and pin
+
+The left sidebar supports two extra modes:
+
+- **Detach** (`Super+Alt+A` or `Ctrl+D` when focused) — pulls the sidebar out of the layer-shell and into a normal floating window. You can move it anywhere on screen.
+- **Pin** (`Ctrl+P` when focused) — reserves an exclusive zone so tiled windows don't overlap the sidebar.
+
+### IPC control
+
+```bash
+qs -c ii ipc call sidebarLeft toggle
+qs -c ii ipc call sidebarLeft open
+qs -c ii ipc call sidebarLeft close
+```
+
+---
+
+## Right sidebar
+
+The right sidebar is a scrollable panel with several fixed sections stacked vertically.
+
+### System button row
+
+At the top of the sidebar you will find a row showing the system uptime and four buttons: **Edit quick toggles**, **Reload Hyprland & Quickshell**, **Settings**, and **Session** (power menu).
+
+### Quick sliders
+
+Optional volume, microphone, and brightness sliders that appear below the system row. Disabled by default.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `sidebar.quickSliders.enable` | boolean | `false` | Show the quick sliders section. |
+| `sidebar.quickSliders.showVolume` | boolean | `true` | Show output volume slider. |
+| `sidebar.quickSliders.showMic` | boolean | `false` | Show microphone input slider. |
+| `sidebar.quickSliders.showBrightness` | boolean | `true` | Show display brightness slider. |
+
+### Quick toggles
+
+A grid or row of toggle buttons for common system functions. Two styles are available.
+
+<Tabs>
+  <Tab title="Android style (default)">
+    A configurable grid of large pill-shaped toggles, similar to Android's quick settings shade. The number of columns and the set of toggles are fully configurable.
+
+    ```json
+    "sidebar": {
+      "quickToggles": {
+        "style": "android",
+        "android": {
+          "columns": 5,
+          "toggles": [
+            { "size": 2, "type": "network" },
+            { "size": 2, "type": "bluetooth" },
+            { "size": 1, "type": "idleInhibitor" },
+            { "size": 1, "type": "mic" },
+            { "size": 2, "type": "audio" },
+            { "size": 2, "type": "nightLight" }
+          ]
+        }
+      }
+    }
+    ```
+
+    Each toggle object accepts a `type` and a `size` (number of columns it spans). Available types: `network`, `bluetooth`, `idleInhibitor`, `mic`, `audio`, `nightLight`, `darkMode`, `antiFlashbang`, `cloudflareWarp`, `easyEffects`, `gameMode`, `notifications`, `onScreenKeyboard`, `powerProfile`, `colorPicker`, `screenSnip`, `musicRecognition`.
+  </Tab>
+  <Tab title="Classic style">
+    A compact horizontal row of smaller toggle buttons (network, Bluetooth, idle inhibitor, Cloudflare WARP, EasyEffects, game mode, night light).
+
+    ```json
+    "sidebar": {
+      "quickToggles": {
+        "style": "classic"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Notification center
+
+A scrollable list of all pending notifications grouped by application, with timestamps. From here you can dismiss individual notifications or clear all at once. Notifications are automatically suppressed as popups when the right sidebar is open.
+
+### Bottom widget group (calendar, to-do, timer)
+
+A tabbed panel at the bottom of the sidebar with three tabs:
+
+| Tab | Description |
+|---|---|
+| **Calendar** | Monthly calendar view. The locale is set by `calendar.locale` (default: `"en-GB"`). |
+| **To Do** | Simple task list with add, complete, and delete actions. Tasks are persisted across sessions. Add items from the launcher with `/todo <task>`. |
+| **Timer** | Pomodoro timer and stopwatch. Configurable focus, break, and long-break durations. |
+
+The bottom group can be collapsed to a single compact row showing the current date and task count.
+
+### Extended dialogs
+
+Tapping the arrow icon on network, Bluetooth, or audio toggles opens an expanded dialog:
+
+- **Wi-Fi dialog** — lists nearby access points with signal strength and connection controls.
+- **Bluetooth dialog** — lists paired and discoverable devices with connect/disconnect controls.
+- **Volume mixer** — per-application output and input volume control.
+- **Night light dialog** — color temperature slider with automatic schedule toggle.
+
+### IPC control
+
+```bash
+qs -c ii ipc call sidebarRight toggle
+qs -c ii ipc call sidebarRight open
+qs -c ii ipc call sidebarRight close
+```
+
+---
+
+## Sidebar config reference
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `sidebar.keepRightSidebarLoaded` | boolean | `true` | Keep the right sidebar content in memory even when closed. Reduces open latency. |
+| `sidebar.quickToggles.style` | string | `"android"` | Quick toggle style: `"android"` or `"classic"`. |
+| `sidebar.cornerOpen.enable` | boolean | `true` | Open sidebars by hovering or clicking near the screen corner. |
+| `sidebar.cornerOpen.bottom` | boolean | `false` | Use the bottom corner instead of the top corner for corner-open. |
+| `sidebar.cornerOpen.cornerRegionWidth` | integer | `250` | Width in pixels of the corner trigger region. |
+| `sidebar.cornerOpen.cornerRegionHeight` | integer | `5` | Height in pixels of the corner trigger region. |
+| `sidebar.cornerOpen.valueScroll` | boolean | `true` | Allow scrolling in the corner region to adjust brightness (left) or volume (right). |
+| `sidebar.translator.enable` | boolean | `false` | Show the Translator tab in the left sidebar. |
+| `sidebar.translator.delay` | integer | `300` | Milliseconds after typing before a translation request is sent. |
+| `sidebar.ai.textFadeIn` | boolean | `false` | Animate AI response text with a fade-in effect. |
+| `sidebar.booru.allowNsfw` | boolean | `false` | Allow NSFW results in the Anime tab. |
+| `sidebar.booru.defaultProvider` | string | `"yandere"` | Default image board provider. |
+| `sidebar.booru.limit` | integer | `20` | Number of images to load per page. |
+
+<Warning>
+  Enabling `sidebar.booru.allowNsfw` is your own responsibility. Make sure you comply with the terms of service of the image board provider.
+</Warning>

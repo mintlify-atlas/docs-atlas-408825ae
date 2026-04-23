@@ -1,0 +1,145 @@
+---
+title: "Install illogical-impulse on Arch, Fedora, or Gentoo"
+description: "Step-by-step instructions for installing illogical-impulse using the automated setup script, including available install options and flags."
+---
+
+The illogical-impulse installer is a Bash script that guides you through installing all dependencies, configuring permissions and services, and copying configuration files into your home directory. Every command is printed to the terminal before it runs — you confirm each one before it executes. The process is fully idempotent, so re-running it to update or repair your installation is safe.
+
+<Warning>
+  The installer does **not** handle GPU drivers, zram, or any hardware-level configuration. You must have a working GPU driver installed before proceeding. If your GPU is not configured correctly, Hyprland may fail to start regardless of what illogical-impulse installs.
+</Warning>
+
+## Prerequisites
+
+Before running the installer, make sure:
+
+- Your distribution is Arch Linux, Fedora, Gentoo, or NixOS.
+- Hyprland can be installed on your system (Wayland-capable GPU, working GPU driver).
+- You are **not** running as root or via `sudo`. The installer must be run as a regular user.
+
+## Install methods
+
+<CodeGroup>
+
+```bash One-liner (recommended)
+bash <(curl -s https://ii.clsty.link/get)
+```
+
+```bash Manual clone and run
+git clone https://github.com/end-4/dots-hyprland.git
+cd dots-hyprland
+./setup install
+```
+
+</CodeGroup>
+
+The one-liner downloads and runs the setup script directly, cloning the repository for you. If you prefer to inspect the repository first, use the manual approach.
+
+## Install flow
+
+The installer runs three phases in sequence:
+
+<Steps>
+  <Step title="Install dependencies">
+    All required packages are installed — Hyprland, Quickshell, fonts, utilities, and more. On Arch this uses `pacman` and the AUR. Python packages are installed into an isolated virtual environment at `~/.local/state/quickshell/.venv`.
+
+    The script detects your distribution from `/etc/os-release` and selects the appropriate dependency installer from `sdata/dist-arch/`, `sdata/dist-fedora/`, or `sdata/dist-gentoo/`.
+
+    <Note>
+      If you are on Fedora or Gentoo, the installer warns you if the community-provided dependency scripts appear to be out of date relative to the Arch reference. Check the upstream [discussions](https://github.com/end-4/dots-hyprland/discussions/2140) before continuing.
+    </Note>
+  </Step>
+  <Step title="Set up permissions and services">
+    The script adds your user to the required groups (`video`, `i2c`, `input`), enables the `ydotool` user service, enables Bluetooth, and applies default GTK and Qt theme settings using `gsettings` and `kwriteconfig6`.
+  </Step>
+  <Step title="Copy configuration files">
+    Config files are synced into `~/.config` and `~/.local`. If files already exist, you are offered the option to back them up before they are overwritten. On a first run originals are moved to `.old`; on subsequent runs new versions are saved as `.new` for you to review.
+  </Step>
+</Steps>
+
+<Tip>
+  The script is designed to be idempotent. You can run it multiple times — for example, to apply updates after a `git pull` — without duplicating or breaking your existing configuration.
+</Tip>
+
+## Setup script subcommands
+
+Run `./setup help` to see all available subcommands. The most useful ones are:
+
+| Subcommand | Description |
+|---|---|
+| `install` | (Re)install or update illogical-impulse |
+| `install-deps` | Run only step 1: install dependencies |
+| `install-setups` | Run only step 2: configure permissions and services |
+| `install-files` | Run only step 3: copy configuration files |
+| `uninstall` | Remove illogical-impulse |
+| `exp-update` | Experimental: update without a full reinstall |
+| `exp-merge` | Experimental: merge upstream changes into local configs via git rebase |
+| `resetfirstrun` | Reset the first-run state so the next install is treated as fresh |
+
+## Install flags
+
+Pass flags to `./setup install` to control what the installer does. To see the full list at any time:
+
+```bash
+./setup install --help
+```
+
+<AccordionGroup>
+  <Accordion title="Confirmation and safety flags">
+
+    | Flag | Description |
+    |---|---|
+    | `-f`, `--force` | Force mode — run without any confirmation prompts (dangerous) |
+    | `-s`, `--skip-sysupdate` | Skip the system package upgrade (e.g. `pacman -Syu`) |
+    | `--skip-backup` | Skip backing up conflicting files before overwriting them |
+
+  </Accordion>
+  <Accordion title="Skip individual config components">
+
+    | Flag | Description |
+    |---|---|
+    | `--skip-quickshell` | Skip installing the Quickshell configuration |
+    | `--skip-hyprland` | Skip installing the Hyprland configuration |
+    | `--skip-fish` | Skip installing the Fish shell configuration |
+    | `--skip-fontconfig` | Skip installing the fontconfig configuration |
+    | `--skip-miscconf` | Skip copying miscellaneous config directories (everything except Quickshell, Fish, and Hyprland) |
+    | `--core` | Alias for `--skip-plasmaintg --skip-fish --skip-fontconfig --skip-miscconf` |
+
+  </Accordion>
+  <Accordion title="Skip entire install phases">
+
+    | Flag | Description |
+    |---|---|
+    | `--skip-alldeps` | Skip the entire dependency installation phase |
+    | `--skip-allsetups` | Skip the entire permissions/services setup phase |
+    | `--skip-allfiles` | Skip the entire file-copying phase |
+
+  </Accordion>
+  <Accordion title="Font and appearance options">
+
+    | Flag | Description |
+    |---|---|
+    | `--fontset <set>` | Use a predefined font and fontconfig set. Run `ls dots-extra/fontsets` in the repo to see available sets. |
+
+  </Accordion>
+</AccordionGroup>
+
+## Updating
+
+To update to the latest version, pull the latest commits first, then re-run the installer:
+
+```bash
+git stash && git pull
+./setup install
+```
+
+Because the installer is idempotent, re-running it applies only what has changed.
+
+## Distribution support
+
+| Distribution | Status |
+|---|---|
+| Arch Linux | Primary — actively maintained by core developers |
+| Fedora | Community-supported |
+| Gentoo | Community-supported |
+| NixOS | Community-supported (experimental, work in progress) |

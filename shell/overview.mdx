@@ -1,0 +1,109 @@
+---
+title: "Shell overview: the illogical-impulse desktop"
+description: "A tour of all the components that make up the illogical-impulse Quickshell-based desktop — bar, sidebars, overview, dock, and more."
+---
+
+The illogical-impulse shell is a fully custom graphical shell for Hyprland, built with [Quickshell](https://quickshell.outfoxxed.me/) and written in QML. It replaces the traditional desktop environment panel with a composable set of Wayland layer-shell surfaces — each component is an independent window loaded by a central `ShellRoot`. The shell reads live system state (workspaces, media, notifications, resources, network) and writes its configuration to a single JSON file, so every setting takes effect at runtime without restarting.
+
+## Components
+
+<CardGroup cols={2}>
+  <Card title="Status bar" icon="rectangle-wide" href="/shell/bar">
+    Workspaces, active window title, clock with popup calendar, battery, resource gauges, media info, system tray, and utility buttons. Spans the full width of every monitor by default.
+  </Card>
+  <Card title="Left sidebar" icon="panel-left" href="/shell/sidebars">
+    Opens with **Super+A**. Hosts the AI chat interface and the text translator powered by `translate-shell`.
+  </Card>
+  <Card title="Right sidebar" icon="panel-right" href="/shell/sidebars">
+    Opens with **Super+N**. Hosts quick toggles, volume/brightness sliders, notifications, calendar, Pomodoro timer, volume mixer, Wi-Fi networks, Bluetooth devices, and a to-do list.
+  </Card>
+  <Card title="Search and launcher" icon="search" href="/shell/search-launcher">
+    Opens by tapping **Super**. Searches apps, clipboard history, emoji, math, shell commands, and the web using a prefix system.
+  </Card>
+  <Card title="Notification popups" icon="bell" href="/shell/notifications">
+    Appear in the top-right corner of the focused monitor. Auto-dismiss after a configurable timeout. Separate from the notification center in the right sidebar.
+  </Card>
+  <Card title="Media controls" icon="music" href="/shell/media-controls">
+    Toggle with **Super+M**. Full MPRIS overlay with album art, waveform visualizer powered by `cava`, seek scrubber, and SongRec music recognition.
+  </Card>
+</CardGroup>
+
+### Additional components
+
+The `illogical-impulse` panel family (`ii`) also includes these surfaces, loaded on demand:
+
+| Component | Keybind | Description |
+|---|---|---|
+| Dock | — | Optional application dock. Disabled by default; enable with `dock.enable: true`. |
+| On-screen keyboard | Super+K | Full virtual keyboard toggle. |
+| Lock screen | Super+L | Built-in screen locker with blur, background clock, and security options. |
+| Session screen | Ctrl+Alt+Delete | Power menu: lock, sleep, reboot, shutdown. |
+| Region selector | Super+Shift+S | Screen-region tool for screenshots, recording, OCR, and reverse image search. |
+| Screen translator | Super+Shift+T | Translates text in any screen region using OCR and `trans`. |
+| Cheatsheet | Super+/ | Keybind reference overlay. |
+| On-screen display | (hardware keys) | Volume and brightness popups triggered by media keys. |
+| Wallpaper selector | Ctrl+Super+T | Browse and apply wallpapers with live Material You color-scheme generation. |
+| Background | — | Desktop background with optional analog/digital clock and weather widgets. |
+
+## Panel families
+
+The shell ships two panel families you can cycle between at runtime without restarting.
+
+<AccordionGroup>
+  <Accordion title="illogical-impulse (ii) — default">
+    The original design: horizontal top bar, floating rounded sidebars, overview grid, and floating popups. Set by `panelFamily: "ii"` in config.
+  </Accordion>
+  <Accordion title="Waffle — Windows 11-inspired">
+    A bottom taskbar layout with a Start-menu-style launcher, action center, and notification center. Set by `panelFamily: "waffle"` in config. Includes tweaks for smoother animations and accurate context menus.
+  </Accordion>
+</AccordionGroup>
+
+Press **Ctrl+Super+P** to cycle between families at runtime. You can also call the IPC target:
+
+```bash
+qs -c ii ipc call panelFamily cycle
+```
+
+## Restarting the shell
+
+<Steps>
+  <Step title="Keyboard shortcut">
+    Press **Ctrl+Super+R** to kill and relaunch the shell. This also restarts `ydotool` and clears any stale Quickshell state.
+  </Step>
+  <Step title="Terminal command">
+    ```bash
+    pkill qs; qs -c ii
+    ```
+    Run this if the keyboard shortcut is unavailable (e.g., after a crash).
+  </Step>
+</Steps>
+
+<Note>
+The shell sets `QS_NO_RELOAD_POPUP=1`, so config-file changes (JSON edits) reload silently without a popup. A full restart is only needed after editing QML source files.
+</Note>
+
+## IPC interface
+
+Every major component exposes an IPC target you can call from scripts or keybinds:
+
+```bash
+qs -c ii ipc call <target> <function>
+```
+
+Common targets and functions:
+
+| Target | Functions |
+|---|---|
+| `bar` | `toggle`, `open`, `close` |
+| `sidebarLeft` | `toggle`, `open`, `close` |
+| `sidebarRight` | `toggle`, `open`, `close` |
+| `mediaControls` | `toggle`, `open`, `close` |
+| `search` | `toggle`, `open`, `close`, `clipboardToggle` |
+| `panelFamily` | `cycle` |
+| `region` | `screenshot`, `search`, `ocr` |
+
+The keybinds in `keybinds.conf` use the same interface via Hyprland global shortcuts registered by the shell — for example, `Super+J` registers as `quickshell:barToggle` and calls `bar toggle` internally.
+
+<Tip>
+If the shell is not running, most keybinds fall back to an alternative command. The fallback is triggered when `qs -c ii ipc call TEST_ALIVE` returns a non-zero exit code — for example, the launcher falls back to `fuzzel`.
+</Tip>

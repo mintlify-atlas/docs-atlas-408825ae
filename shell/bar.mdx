@@ -1,0 +1,145 @@
+---
+title: "Status bar — workspace, clock, resources, tray"
+description: "Full reference for the illogical-impulse status bar: workspace indicator, clock, resources, media widget, utility buttons, auto-hide, and every config option."
+---
+
+The status bar spans the full width of each monitor and is divided into three sections: a left side that opens the left sidebar, a center section with workspace indicators and a clock group, and a right side that opens the right sidebar. Scrolling on the left side adjusts screen brightness; scrolling on the right side adjusts audio volume.
+
+## Layout overview
+
+```
+[sidebar button | active window]  [resources | media]  [workspaces]  [clock | util buttons | battery]  [weather | tray | right sidebar button]
+        ←── left side ──→               ←────────────── center ────────────────→                         ←──────── right side ────────────────→
+```
+
+The center section keeps the workspace indicator fixed in the middle while the clock group and resource/media groups grow outward from it. On narrow screens the bar automatically switches to a shortened or ultra-shortened layout that hides verbose text.
+
+## Widgets
+
+### Workspace indicator
+
+Displays up to `bar.workspaces.shown` (default: 10) workspaces with open-app icons. Right-clicking the workspace indicator toggles the overview screen.
+
+### Active window
+
+Shows the title of the currently focused window. Hidden in shortened bar modes.
+
+### Resource monitor
+
+Displays CPU, RAM, and swap usage as compact bars. Clicking opens a popup with a scrolling history graph. Each resource has configurable warning thresholds.
+
+### Media widget
+
+Shows the current track title and artist from the active MPRIS player alongside a circular progress indicator. Middle-click to play/pause, right-click or forward-button to skip, back-button to go to the previous track, and left-click to open the media controls popup.
+
+### Clock and date
+
+Displays the time in `time.format` (default: `hh:mm`). Clicking the center section (which includes the clock) opens the right sidebar.
+
+### Battery indicator
+
+Appears automatically when battery hardware is detected. Shows charge percentage and charging state.
+
+### Weather widget
+
+Disabled by default. When enabled it fetches current conditions and temperature using GPS-based location or a configured city name.
+
+### System tray
+
+Renders StatusNotifierItem tray icons for background applications. Hidden in shortened bar modes. You can configure pinned items, passive icon filtering, and monochrome rendering.
+
+### Utility buttons
+
+A row of small circular icon buttons in the center-right group. Each button is individually enabled or disabled. See the [configuration table](#utility-button-config) below.
+
+## Utility button config
+
+| Button | Config key | Default |
+|---|---|---|
+| Screen snip / region screenshot | `bar.utilButtons.showScreenSnip` | `true` |
+| Screen recorder | `bar.utilButtons.showScreenRecord` | `false` |
+| Color picker (hyprpicker) | `bar.utilButtons.showColorPicker` | `false` |
+| On-screen keyboard toggle | `bar.utilButtons.showKeyboardToggle` | `true` |
+| Microphone mute toggle | `bar.utilButtons.showMicToggle` | `false` |
+| Dark / light mode toggle | `bar.utilButtons.showDarkModeToggle` | `true` |
+| Performance profile cycle | `bar.utilButtons.showPerformanceProfileToggle` | `false` |
+
+## Bar configuration
+
+All options live under the `bar` key in `~/.config/illogical-impulse/config.json`.
+
+### Position and shape
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bar.bottom` | boolean | `false` | Place the bar at the bottom of the screen instead of the top. |
+| `bar.vertical` | boolean | `false` | Use the vertical bar layout instead of horizontal. |
+| `bar.cornerStyle` | integer | `0` | `0` = hug screen edges, `1` = floating pill, `2` = plain rectangle. |
+| `bar.floatStyleShadow` | boolean | `true` | Show a drop shadow when `cornerStyle` is `1`. |
+| `bar.borderless` | boolean | `false` | Remove visual grouping separators between widget groups. |
+| `bar.showBackground` | boolean | `true` | Render the bar background. Set `false` for a fully transparent bar. |
+| `bar.screenList` | string array | `[]` | Restrict the bar to specific monitors by name (e.g. `["eDP-1"]`). Empty means all monitors. |
+
+### Auto-hide
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bar.autoHide.enable` | boolean | `false` | Hide the bar when the cursor is not near it. |
+| `bar.autoHide.hoverRegionWidth` | integer | `2` | Pixel-width of the hover trigger region at the screen edge. |
+| `bar.autoHide.pushWindows` | boolean | `false` | Keep the exclusive zone active so windows are not hidden behind the bar. |
+| `bar.autoHide.showWhenPressingSuper.enable` | boolean | `true` | Temporarily reveal the bar when `Super` is held. |
+| `bar.autoHide.showWhenPressingSuper.delay` | integer | `140` | Milliseconds of hold before the bar appears. |
+
+### Workspaces
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bar.workspaces.shown` | integer | `10` | Number of workspace slots to display. |
+| `bar.workspaces.showAppIcons` | boolean | `true` | Show application icons in workspace dots. |
+| `bar.workspaces.monochromeIcons` | boolean | `true` | Render app icons in monochrome. |
+| `bar.workspaces.alwaysShowNumbers` | boolean | `false` | Always show workspace numbers on hover. |
+| `bar.workspaces.showNumberDelay` | integer | `300` | Milliseconds before workspace numbers appear on hover. |
+| `bar.workspaces.numberMap` | string array | `["1","2"]` | Custom characters to display instead of numeric workspace labels. |
+| `bar.workspaces.useNerdFont` | boolean | `false` | Use Nerd Font glyphs for workspace icons. |
+
+### Resources
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bar.resources.alwaysShowCpu` | boolean | `true` | Always show CPU usage bar. |
+| `bar.resources.alwaysShowSwap` | boolean | `true` | Always show swap usage bar. |
+| `bar.resources.cpuWarningThreshold` | integer | `90` | CPU usage percentage at which the indicator changes color. |
+| `bar.resources.memoryWarningThreshold` | integer | `95` | RAM usage percentage at which the indicator changes color. |
+| `bar.resources.swapWarningThreshold` | integer | `85` | Swap usage percentage at which the indicator changes color. |
+
+### Weather
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bar.weather.enable` | boolean | `false` | Show weather widget in the bar. |
+| `bar.weather.enableGPS` | boolean | `true` | Use GPS for location. Set `false` to use `bar.weather.city`. |
+| `bar.weather.city` | string | `""` | City name when GPS is disabled. |
+| `bar.weather.useUSCS` | boolean | `false` | Use US customary units (°F, mph) instead of metric. |
+| `bar.weather.fetchInterval` | integer | `10` | Minutes between weather data refreshes. |
+
+### Indicators
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `bar.indicators.notifications.showUnreadCount` | boolean | `false` | Show a badge with the unread notification count on the right sidebar button. |
+
+## IPC control
+
+You can toggle, open, or close the bar from any script:
+
+```bash
+qs -c ii ipc call bar toggle
+qs -c ii ipc call bar open
+qs -c ii ipc call bar close
+```
+
+The bar also responds to the `barToggle` global shortcut (`Super+J` by default).
+
+<Note>
+  The bar hides automatically when the screen locks (`GlobalStates.screenLocked`). It reappears when the screen is unlocked.
+</Note>

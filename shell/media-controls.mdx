@@ -1,0 +1,119 @@
+---
+title: "Media controls — MPRIS player widget and controls"
+description: "How to use the illogical-impulse media controls popup and bar widget: MPRIS support, music recognition, keybinds, and config options."
+---
+
+The shell integrates with any media player that exposes an [MPRIS2](https://specifications.freedesktop.org/mpris-spec/latest/) D-Bus interface. This includes Spotify, Firefox, Chromium, MPD, VLC, and most Linux music players. Controls are available both in the bar widget and in the dedicated media controls popup.
+
+## Bar media widget
+
+The bar's center-left group contains a compact media widget that shows the current track title and artist alongside a circular progress ring. The widget is always visible as long as at least one MPRIS player is registered.
+
+| Mouse action | Effect |
+|---|---|
+| Left-click | Toggle the media controls popup |
+| Middle-click | Play / pause |
+| Right-click | Next track |
+| Back button | Previous track |
+| Forward button | Next track |
+
+## Media controls popup
+
+Press `Super+M` to open the full media controls popup. It appears near the bar (above the bar when the bar is at the top, or below when it is at the bottom).
+
+Each active MPRIS player gets its own **player card** in the popup. A player card contains:
+
+- **Album art** — downloaded and cached locally. A blurred version fills the card background.
+- **Dominant color theming** — the card's accent colors adapt to the album art.
+- **Track title and artist**
+- **Position and duration** — shown as `elapsed / total`.
+- **Progress bar or scrubber** — if the player supports seeking, a draggable slider replaces the static progress bar. Scrub by dragging it.
+- **Previous / play-pause / next buttons**
+- **Waveform visualizer** — a live audio visualizer powered by `cava` runs while the popup is open and audio is playing.
+
+Clicking outside the popup or pressing `Escape` closes it.
+
+## Music recognition
+
+The search launcher bar contains a **Recognize music** button. You can also trigger recognition from the android-style quick toggle panel in the right sidebar.
+
+Music recognition uses [`songrec`](https://github.com/marin-m/SongRec) to listen to your audio monitor source and identify the track using the Shazam API. When a match is found, a notification appears with:
+
+- Track title and artist
+- A **Shazam** button — opens the track on Shazam
+- A **YouTube** button — opens a YouTube search
+
+| Config key | Default | Description |
+|---|---|---|
+| `musicRecognition.timeout` | `16` | Maximum seconds to listen before giving up. |
+| `musicRecognition.interval` | `4` | Seconds between recognition attempts during a session. |
+
+<Info>
+  `songrec` must be installed for music recognition to work. If it is missing, you will see a notification instructing you to install it.
+</Info>
+
+## MPRIS keybinds
+
+| Action | Keybind |
+|---|---|
+| Toggle media controls popup | `Super+M` |
+| Play / pause | `Super+Shift+P` |
+| Next track | `Super+Shift+N` |
+| Previous track | `Super+Shift+B` |
+| Mute output | `XF86AudioMute` |
+
+Hardware media keys (`XF86AudioPlay`, `XF86AudioPause`, `XF86AudioNext`, `XF86AudioPrev`) are also bound globally.
+
+## Audio volume keybinds
+
+| Action | Keybind |
+|---|---|
+| Raise volume (+2%) | `XF86AudioRaiseVolume` |
+| Lower volume (−2%) | `XF86AudioLowerVolume` |
+| Mute output | `XF86AudioMute` / `Super+Shift+M` |
+| Mute microphone | `XF86AudioMicMute` / `Super+Alt+M` |
+| Scroll right side of bar | Adjust output volume |
+
+Volume changes are capped at 150% (`-l 1.5` flag to `wpctl`).
+
+## Duplicate player filtering
+
+Some combinations of players register multiple D-Bus buses for the same track — for example Firefox alongside plasma-browser-integration, or `playerctld` alongside a native player. The shell filters these duplicates automatically.
+
+```json
+"media": {
+  "filterDuplicatePlayers": true
+}
+```
+
+When `filterDuplicatePlayers` is `true` (default), the following are removed:
+
+- Native Firefox and Chromium MPRIS buses when plasma-browser-integration is active (since the integration bus provides richer metadata).
+- The `playerctld` aggregator bus (it duplicates every other player).
+- Non-instance MPD buses.
+
+Set `filterDuplicatePlayers` to `false` if you see "No active player" in the popup despite a player being open.
+
+## Active player tracking
+
+The `MprisController` service automatically tracks which player is "active". When a player starts playing it becomes the active player. When a playing player is closed, the next playing player takes over. If no player is playing, the most recently used player remains active.
+
+You can cycle through players in the media controls popup by clicking a different player card.
+
+## IPC control
+
+```bash
+qs -c ii ipc call mediaControls toggle
+qs -c ii ipc call mediaControls open
+qs -c ii ipc call mediaControls close
+
+# MPRIS actions
+qs -c ii ipc call mpris playPause
+qs -c ii ipc call mpris next
+qs -c ii ipc call mpris previous
+qs -c ii ipc call mpris pauseAll
+```
+
+<Note>
+  Opening the media controls popup automatically dismisses all active notification popups so they do not overlap.
+</Note>

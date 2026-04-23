@@ -1,0 +1,213 @@
+---
+title: "Customizing illogical-impulse: panels, dock, and more"
+description: "Switch panel families, enable the dock, pin apps, configure work safety mode, and other advanced customization options in illogical-impulse."
+---
+
+Beyond fonts and transparency, illogical-impulse supports deeper customization — switching the entire panel family, enabling an application dock, pinning apps, and configuring system-level behaviors like audio protection and work safety mode. All options live in `~/.config/illogical-impulse/config.json`.
+
+## Panel families
+
+illogical-impulse ships two distinct panel layouts called *panel families*:
+
+| Family | Style | Default |
+|--------|-------|---------|
+| `ii` | Material Design 3, top bar with sidebars | Yes |
+| `waffle` | Windows 11-inspired, taskbar with Action Center | No |
+
+Switch between them with `Ctrl+Super+P`, or set a permanent default:
+
+```json
+{
+  "panelFamily": "waffle"
+}
+```
+
+### Waffle-specific options
+
+```json
+{
+  "waffles": {
+    "bar": {
+      "bottom": true,
+      "leftAlignApps": false
+    },
+    "actionCenter": {
+      "toggles": ["network", "bluetooth", "powerProfile", "idleInhibitor", "nightLight", "darkMode", "antiFlashbang", "mic", "musicRecognition", "notifications", "onScreenKeyboard", "gameMode", "screenSnip", "colorPicker"]
+    },
+    "calendar": {
+      "force2CharDayOfWeek": true
+    }
+  }
+}
+```
+
+## Application dock
+
+The dock is hidden by default. Enable it and pin your most-used apps:
+
+```json
+{
+  "dock": {
+    "enable": true,
+    "pinnedApps": ["org.kde.dolphin", "kitty", "firefox"],
+    "height": 60,
+    "monochromeIcons": true,
+    "hoverToReveal": true,
+    "pinnedOnStartup": false
+  }
+}
+```
+
+App IDs correspond to `.desktop` file names (without the `.desktop` extension). Run `ls /usr/share/applications/` to find app IDs.
+
+## Launcher pinned apps
+
+Pin apps that appear prominently at the top of the search launcher:
+
+```json
+{
+  "launcher": {
+    "pinnedApps": ["org.kde.dolphin", "kitty", "cmake-gui"]
+  }
+}
+```
+
+## System tray
+
+Configure which tray items appear in the bar versus the pinned area:
+
+```json
+{
+  "tray": {
+    "monochromeIcons": true,
+    "showItemId": false,
+    "invertPinnedItems": true,
+    "pinnedItems": ["Fcitx"],
+    "filterPassive": true
+  }
+}
+```
+
+With `invertPinnedItems: true`, `pinnedItems` becomes a *whitelist* for the tray — items in the list are pinned prominently, everything else goes in the overflow area.
+
+## Audio protection
+
+Prevent sudden loud volume jumps:
+
+```json
+{
+  "audio": {
+    "protection": {
+      "enable": true,
+      "maxAllowedIncrease": 10,
+      "maxAllowed": 99
+    }
+  }
+}
+```
+
+When enabled, a single volume increase cannot exceed `maxAllowedIncrease` percent, and volume cannot go above `maxAllowed`.
+
+## Night light scheduling
+
+```json
+{
+  "light": {
+    "night": {
+      "automatic": true,
+      "from": "19:00",
+      "to": "06:30",
+      "colorTemperature": 5000
+    },
+    "antiFlashbang": {
+      "enable": false
+    }
+  }
+}
+```
+
+Night light is applied automatically between `from` and `to` times. Anti-flashbang dims the screen briefly when a bright window appears suddenly.
+
+## Work safety mode
+
+Automatically hide certain content when on public or work networks:
+
+```json
+{
+  "workSafety": {
+    "enable": {
+      "wallpaper": false,
+      "clipboard": false
+    },
+    "triggerCondition": {
+      "networkNameKeywords": ["airport", "cafe", "college", "eduroam", "guest", "public", "school", "university"],
+      "fileKeywords": ["anime", "booru", "hentai", "nsfw"],
+      "linkKeywords": ["hentai", "porn", "rule34"]
+    }
+  }
+}
+```
+
+When triggered by a matching network name or file/link keyword, the specified features are hidden automatically.
+
+## Pomodoro timer
+
+```json
+{
+  "time": {
+    "pomodoro": {
+      "focus": 1500,
+      "breakTime": 300,
+      "longBreak": 900,
+      "cyclesBeforeLongBreak": 4
+    }
+  }
+}
+```
+
+Times are in seconds. Access the Pomodoro timer from the right sidebar.
+
+## Clock and time format
+
+```json
+{
+  "time": {
+    "format": "hh:mm",
+    "shortDateFormat": "dd/MM",
+    "dateWithYearFormat": "dd/MM/yyyy",
+    "dateFormat": "ddd, dd/MM",
+    "secondPrecision": false
+  }
+}
+```
+
+Format strings follow [Qt's QTime::toString](https://doc.qt.io/qt-6/qtime.html#toString) syntax.
+
+## Language and locale
+
+Set the UI language explicitly or let the shell detect it from your system locale:
+
+```json
+{
+  "language": {
+    "ui": "auto",
+    "translator": {
+      "engine": "auto",
+      "targetLanguage": "auto",
+      "sourceLanguage": "auto"
+    }
+  }
+}
+```
+
+Set `language.ui` to a locale code like `"zh_CN"` or `"ja_JP"` to force a specific language. Translation contributions live in `dots/.config/quickshell/ii/translations/`.
+
+## Fontsets
+
+The setup script supports pre-defined font sets installable with a flag:
+
+```bash
+./setup install --fontset <name>
+```
+
+Available fontsets are listed in `dots-extra/fontsets/`. This is useful if you want a consistent alternative to the default Google Sans Flex / JetBrains Mono NF combination.

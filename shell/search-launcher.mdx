@@ -1,0 +1,140 @@
+---
+title: "Search launcher — apps, files, math, web search"
+description: "How to use the illogical-impulse search and launcher overlay: prefix system, search types, pinned apps, clipboard history, emoji picker, and config options."
+---
+
+Pressing `Super` opens the search launcher overlay. The search bar accepts plain text to find apps, or a single-character prefix to switch into a specialized mode. The workspace overview and the search widget share the same panel — typing anything switches from the overview grid to the search results list.
+
+## Opening the launcher
+
+| Action | Keybind |
+|---|---|
+| Toggle launcher / overview | `Super` (tap and release) |
+| Toggle workspace overview | `Super+Tab` |
+| Open clipboard history | `Super+V` |
+| Open emoji picker | `Super+Period` |
+
+The `Super` tap-and-release mechanism works by tracking whether another key was pressed while `Super` was held. If you held `Super` to trigger a window management shortcut, the launcher will not open on release.
+
+## Prefix system
+
+Type a prefix character at the start of your query to activate a specific search mode. The prefix characters are configurable.
+
+| Default prefix | Mode | Description |
+|---|---|---|
+| *(none)* | Default search | Searches apps and shows math, command, and web search results below. |
+| `/` | Actions | Runs built-in or user-defined shell actions. |
+| `>` | Apps only | Searches installed applications exclusively. |
+| `;` | Clipboard history | Fuzzy-searches your clipboard history via `cliphist`. |
+| `:` | Emoji picker | Fuzzy-searches emoji by name and copies the selected one. |
+| `=` | Math | Evaluates a mathematical expression using `qalc`. |
+| `$` | Shell command | Runs any shell command via `bash -c`. |
+| `?` | Web search | Opens your configured search engine with the query. |
+
+<Tip>
+  Without a prefix, the launcher still shows math results, shell command results, and a web search result below any app matches — so you rarely need to type a prefix explicitly.
+</Tip>
+
+## Search result types
+
+### Apps
+
+Applications are sourced from `.desktop` entries via Quickshell's `DesktopEntries`. Results are ranked by fuzzy matching. Pressing `Tab` auto-completes the first result. Pressing `Enter` launches the top result.
+
+App entries support **desktop actions**: right-click or use the secondary action button to see actions defined in the `.desktop` file (for example "New Private Window" for a browser).
+
+### Pinned apps
+
+The launcher shows a row of pinned app icons above the search results when the query is empty.
+
+```json
+"launcher": {
+  "pinnedApps": ["org.kde.dolphin", "kitty", "cmake-gui"]
+}
+```
+
+Each entry is a desktop entry ID (the `.desktop` filename without the extension).
+
+### Clipboard history
+
+The `;` prefix searches your clipboard history managed by `cliphist`. Each entry shows a **Copy** and **Delete** action. Images stored in the clipboard are displayed inline (with work-safety blurring when on a sensitive network).
+
+Direct shortcut: `Super+V`.
+
+### Emoji picker
+
+The `:` prefix fuzzy-searches the built-in emoji list by name. Selecting an emoji copies it to your clipboard.
+
+Direct shortcut: `Super+Period`.
+
+### Math
+
+The `=` prefix (or a query starting with a digit) passes the expression to `qalc` and shows the result. Selecting the result copies it to the clipboard.
+
+Example: `= 2^10 + sqrt(144)` → `1036`
+
+### Shell commands
+
+The `$` prefix runs the typed command in a `bash -c` subshell. If the command starts with `sudo`, it is opened in the configured terminal instead.
+
+### Web search
+
+The `?` prefix opens your configured search engine with the query. Sites in `search.excludedSites` are appended as `-site:domain` exclusions.
+
+### Actions
+
+The `/` prefix matches built-in actions and any scripts you place in `~/.config/illogical-impulse/actions/`. Built-in actions include:
+
+| Action | Effect |
+|---|---|
+| `/dark` | Switch to dark color scheme. |
+| `/light` | Switch to light color scheme. |
+| `/accentcolor <hex>` | Apply a custom accent color. |
+| `/wallpaper` | Open the wallpaper selector. |
+| `/todo <task>` | Add a task to the to-do list. |
+| `/wipeclipboard` | Clear the entire clipboard history. |
+| `/superpaste <n>[i]` | Paste the last `n` clipboard entries (append `i` for images only). |
+
+User scripts placed in `~/.config/illogical-impulse/actions/` are loaded automatically. The script filename (without extension) becomes the action name.
+
+## Music recognition
+
+The search bar has a dedicated **Recognize music** button (the music cast icon). Clicking it starts `songrec` and listens to your audio output for up to `musicRecognition.timeout` seconds. When a track is identified, a notification appears with **Shazam** and **YouTube** action buttons.
+
+## Configuration
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `search.engineBaseUrl` | string | `"https://www.google.com/search?q="` | Base URL for web searches. The query is appended directly. |
+| `search.excludedSites` | string array | `["quora.com", "facebook.com"]` | Sites appended as `-site:` exclusions to web searches. |
+| `search.nonAppResultDelay` | integer | `30` | Milliseconds after typing before non-app results (math, etc.) are computed. Keeps typing fast. |
+| `search.sloppy` | boolean | `false` | Use Levenshtein-distance scoring instead of fuzzy sort. |
+| `search.prefix.action` | string | `"/"` | Prefix character for actions. |
+| `search.prefix.app` | string | `">"` | Prefix character for app-only search. |
+| `search.prefix.clipboard` | string | `";"` | Prefix character for clipboard history. |
+| `search.prefix.emojis` | string | `":"` | Prefix character for emoji picker. |
+| `search.prefix.math` | string | `"="` | Prefix character for math evaluation. |
+| `search.prefix.shellCommand` | string | `"$"` | Prefix character for shell commands. |
+| `search.prefix.webSearch` | string | `"?"` | Prefix character for web search. |
+| `search.prefix.showDefaultActionsWithoutPrefix` | boolean | `true` | Show math, command, and web search results even without their prefix. |
+| `launcher.pinnedApps` | string array | `["org.kde.dolphin", "kitty", "cmake-gui"]` | Desktop entry IDs shown as pinned icons when the search box is empty. |
+| `musicRecognition.timeout` | integer | `16` | Maximum seconds to listen for music recognition. |
+| `musicRecognition.interval` | integer | `4` | Seconds between recognition attempts during a session. |
+
+## Overview grid config
+
+The workspace overview grid displayed below the search bar (when the query is empty) is also configurable.
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `overview.enable` | boolean | `true` | Show the workspace overview grid. |
+| `overview.scale` | number | `0.18` | Scale of each workspace thumbnail relative to screen size. |
+| `overview.rows` | integer | `2` | Number of rows in the overview grid. |
+| `overview.columns` | integer | `5` | Number of columns in the overview grid. |
+| `overview.orderRightLeft` | boolean | `false` | Order workspaces from right to left. |
+| `overview.orderBottomUp` | boolean | `false` | Order workspaces from bottom to top. |
+| `overview.centerIcons` | boolean | `true` | Center app icons inside workspace thumbnails. |
+
+<Info>
+  The `qalc` package is required for math evaluation. If it is not installed, the math result field will be empty.
+</Info>

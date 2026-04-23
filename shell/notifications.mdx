@@ -1,0 +1,95 @@
+---
+title: "Notifications — popup display and history center"
+description: "How notifications work in illogical-impulse: popup display, notification center, actions, rich content, Do Not Disturb, and config options."
+---
+
+The shell implements the [freedesktop.org notification specification](https://specifications.freedesktop.org/notification-spec/latest/) through Quickshell's built-in notification server. Notifications appear as floating popups on your focused monitor, accumulate in the notification center inside the right sidebar, and persist across shell restarts.
+
+## Popup display
+
+When a new notification arrives, it appears as a popup in the top-right corner of your focused monitor. Multiple popups stack vertically with the newest at the top.
+
+Each popup supports:
+
+- **Application icon** and **app name**
+- **Summary** (title) and **body** text with Markdown markup
+- **Inline image** — shown when the notification body includes an `<img>` tag or an `image-path` hint
+- **Action buttons** — up to as many actions as the sender application provides (for example "Open" or "Reply")
+- **Urgency levels** — `low`, `normal`, and `critical` notifications are styled differently
+
+Popups time out after `notifications.timeout` milliseconds (default: 7 000 ms, i.e. 7 seconds) unless the sending application requests a specific expiry time.
+
+**Transient** notifications (those with the `transient` hint set) are discarded immediately on timeout rather than moving to the notification center.
+
+<Note>
+  Popups are automatically suppressed while the right sidebar is open — new notifications go directly to the notification center instead.
+</Note>
+
+## Notification center
+
+Open the right sidebar with `Super+N` to access the notification center. Notifications are grouped by application and sorted with the most recent group first.
+
+From the notification center you can:
+
+- **Dismiss a single notification** — click the close button on an individual card.
+- **Dismiss all from an app** — click the close button on the group header.
+- **Clear all notifications** — use the clear-all button at the top of the list.
+- **Invoke an action** — click an action button on any notification that provides one.
+
+The notification status button at the top of the center shows your current Do Not Disturb state and the unread count.
+
+## Unread count indicator
+
+When `bar.indicators.notifications.showUnreadCount` is `true`, a small badge appears on the right sidebar button in the bar showing the number of unread notifications. The badge also appears when Do Not Disturb is active, even if the unread count is zero.
+
+## Do Not Disturb / idle inhibitor
+
+Enabling **Do Not Disturb** (the `silent` flag on the `Notifications` service) suppresses all popups. Notifications still arrive in the notification center.
+
+You can also enable the **idle inhibitor** quick toggle in the right sidebar to prevent the screen from blanking or locking — this is separate from notification suppression.
+
+## Conflict killer
+
+If another notification daemon (such as `dunst` or `mako`) is already running, it will conflict with the shell's built-in server. Enable the automatic conflict killer to have the shell terminate competing daemons on startup.
+
+```json
+"conflictKiller": {
+  "autoKillNotificationDaemons": false
+}
+```
+
+<Warning>
+  Setting `autoKillNotificationDaemons` to `true` will kill any process that registers a `org.freedesktop.Notifications` D-Bus name. Do not enable this if you intentionally use a separate notification daemon alongside the shell.
+</Warning>
+
+## Persistence
+
+The full notification list is stored in a JSON file at `~/.cache/quickshell/notifications/notifications.json`. It is loaded on startup so your notification history survives shell reloads and reboots.
+
+Action buttons are only available for notifications that are still tracked by the notification server. Previously loaded notifications from the file will not have actionable buttons, since the originating process may no longer be alive.
+
+## Configuration
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `notifications.timeout` | integer | `7000` | Milliseconds before a popup is dismissed (moved to notification center). |
+| `bar.indicators.notifications.showUnreadCount` | boolean | `false` | Show unread count badge on the bar's right sidebar button. |
+| `conflictKiller.autoKillNotificationDaemons` | boolean | `false` | Automatically kill other notification daemons on startup. |
+
+## IPC
+
+There is no dedicated IPC target for notifications, but you can control the right sidebar (which houses the notification center) and the media controls (which call `Notifications.timeoutAll()` on open):
+
+```bash
+# Open right sidebar to view notifications
+qs -c ii ipc call sidebarRight open
+
+# Dismiss all notification popups (happens automatically when media controls open)
+qs -c ii ipc call mediaControls open
+```
+
+You can also send notifications using any standard tool:
+
+```bash
+notify-send "Title" "Body text" -a "MyApp" -t 5000
+```

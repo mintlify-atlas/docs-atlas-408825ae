@@ -1,97 +1,77 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "illogical-impulse: Usability-first Hyprland dotfiles"
+description: "A Material Design 3 Hyprland desktop built on Quickshell, featuring AI integration, automatic wallpaper theming, and a transparent install system."
 ---
 
-## Setting up
+illogical-impulse is a polished, daily-drivable Hyprland dotfiles suite. It ships a custom graphical shell built with Quickshell — including a status bar, sidebars, workspace overview, search launcher, and more — all themed automatically from your wallpaper using Material Design 3 color generation.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Installation" icon="rocket" href="/installation">
+    Get illogical-impulse running on your system in minutes with the transparent setup script.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="The Shell" icon="display" href="/shell/overview">
+    Explore the bar, sidebars, overview, launcher, and all built-in shell widgets.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="AI Integration" icon="robot" href="/features/ai-integration">
+    Chat with Gemini, OpenAI-compatible models, or local Ollama from the sidebar.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Theming" icon="palette" href="/features/theming">
+    Learn how wallpaper-based Material Design 3 color generation works end-to-end.
   </Card>
-</Columns>
+  <Card title="Configuration" icon="sliders" href="/configuration/config-file">
+    Browse every option in the JSON config file and learn how to customize the shell.
+  </Card>
+  <Card title="Keybinds" icon="keyboard" href="/features/keybinds">
+    The full keybind reference — open the cheatsheet any time with Super+/.
+  </Card>
+</CardGroup>
 
-## Create beautiful pages
+## What is illogical-impulse?
 
-Everything you need to create world-class documentation.
+illogical-impulse is technically a collection of configuration files, but realistically it is a complete, opinionated desktop environment built on top of Hyprland. The centrepiece is a custom shell — written in QML and powered by Quickshell — that handles everything a traditional desktop environment panel would: workspace switching, system tray, notifications, media controls, brightness/volume, AI chat, and more.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+<Steps>
+  <Step title="Install the dotfiles">
+    Run the one-liner to clone the repo and launch the transparent setup script. Every command is shown before it executes.
 
-## Need inspiration?
+    ```bash
+    bash <(curl -s https://ii.clsty.link/get)
+    ```
+  </Step>
+  <Step title="Launch Hyprland">
+    Select the **Hyprland** session from your display manager, or start it from a TTY. The shell loads automatically on login.
+  </Step>
+  <Step title="Pick a wallpaper">
+    Press `Ctrl+Super+T` to open the wallpaper selector. Choose any image and Material Design 3 colors are generated automatically — the entire shell recolors instantly.
+  </Step>
+  <Step title="Explore the shell">
+    Press `Super+/` to view the keybind cheatsheet. Press `Super+A` for the AI sidebar, `Super+N` for notifications and quick toggles, and `Super` to open the search launcher.
+  </Step>
+</Steps>
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Material Design 3 theming" icon="swatchbook">
+    Every color in the shell — bar, sidebars, notifications, lock screen — is derived from your wallpaper automatically via matugen.
+  </Card>
+  <Card title="AI sidebar" icon="brain">
+    A built-in chat interface supports Gemini, any OpenAI-compatible endpoint, and local Ollama models. Attach files, save chats, and switch models on the fly.
+  </Card>
+  <Card title="Screen utilities" icon="scissors">
+    OCR to clipboard, Google Lens image search, screen translation, color picker, region screenshot, and screen recording — all bound to easy keybinds.
+  </Card>
+  <Card title="Workspace overview" icon="table-cells">
+    Press Super+Tab for a live-preview workspace switcher showing all open windows across all workspaces.
+  </Card>
+  <Card title="Transparent installer" icon="shield-check">
+    The setup script shows every command before running it, is fully idempotent, and supports Arch, Fedora, Gentoo, and NixOS.
+  </Card>
+  <Card title="Waffle panel family" icon="microsoft">
+    Switch to the Windows 11-inspired Waffle layout with Ctrl+Super+P for a taskbar-style experience with an Action Center.
+  </Card>
+</CardGroup>
+
+<Note>
+  illogical-impulse is a Hyprland-only project. It requires a Wayland compositor and will not work on X11. If you are new to Linux or Hyprland, read the [introduction](/introduction) before installing.
+</Note>

@@ -1,0 +1,92 @@
+{
+  "projectType": "general",
+  "projectName": "illogical-impulse (dots-hyprland)",
+  "projectDescription": "A usability-first Hyprland dotfiles suite featuring a custom Material Design 3 shell built with Quickshell, complete with AI integration, theming, and a transparent installation system.",
+  "theme": "willow",
+  "primaryColor": "#4dd6b3",
+  "lightColor": "#357c74",
+  "darkColor": "#1c262e",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "post-install"
+            ]
+          },
+          {
+            "group": "The Shell",
+            "pages": [
+              "shell/overview",
+              "shell/bar",
+              "shell/sidebars",
+              "shell/search-launcher",
+              "shell/notifications",
+              "shell/media-controls"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/ai-integration",
+              "features/theming",
+              "features/screen-utilities",
+              "features/keybinds"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/config-file",
+              "configuration/hyprland",
+              "configuration/appearance",
+              "configuration/customization"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/updating",
+              "guides/contributing",
+              "guides/troubleshooting"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Material Design 3 theming with automatic wallpaper-based color generation via matugen",
+    "Custom Quickshell-based graphical shell (status bar, sidebars, overview, dock)",
+    "AI sidebar supporting Gemini, OpenAI-compatible APIs, and local Ollama models",
+    "Screen utilities: OCR/text recognition, Google Lens integration, screen translation, color picker",
+    "Transparent installation system with idempotent setup script for Arch/Fedora/Gentoo/NixOS",
+    "Workspace overview with live window previews",
+    "Notification center with rich notification support",
+    "Waffle panel family (Windows 11-inspired alternative layout)",
+    "Anti-flashbang display protection and night light scheduling",
+    "Pomodoro timer, clipboard history, emoji picker, music recognition"
+  ],
+  "publicApiSurface": [
+    "./setup install — install/update the dotfiles",
+    "./setup uninstall — remove the dotfiles",
+    "./setup exp-update — experimental update without full reinstall",
+    "./setup exp-merge — merge upstream changes with local configs",
+    "qs -c ii — launch the Quickshell shell config",
+    "qs -c ii ipc call <target> <function> — IPC calls to shell services",
+    "Super+/ — keybind cheatsheet",
+    "Super+A — toggle left sidebar (AI/Translator)",
+    "Super+N — toggle right sidebar (notifications/controls)",
+    "Super+Tab — workspace overview",
+    "Super+Super — search/launcher",
+    "Ctrl+Super+T — wallpaper selector / theme switcher",
+    "Super+Shift+S — screen snip",
+    "Super+Shift+X — OCR to clipboard",
+    "Super+Shift+T — screen translation"
+  ]
+}

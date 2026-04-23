@@ -1,0 +1,141 @@
+---
+title: "Keybind reference for illogical-impulse"
+description: "Complete keybind reference for the illogical-impulse Hyprland desktop — shell, windows, workspaces, screen utilities, media, and apps."
+---
+
+illogical-impulse ships a comprehensive set of keybinds organized across the shell, window management, workspaces, utilities, media, and app launching. Press `Super+/` at any time to open the interactive in-shell cheatsheet.
+
+<Tip>
+  Add your own keybinds in `~/.config/hypr/custom/keybinds.conf`. This file is sourced after the defaults and will not be overwritten by updates.
+</Tip>
+
+## Shell
+
+| Keybind | Action |
+|---------|--------|
+| `Super` (hold/release) | Toggle search / launcher |
+| `Super+Tab` | Toggle workspace overview |
+| `Super+A` | Toggle left sidebar (AI / Translator) |
+| `Super+N` | Toggle right sidebar (notifications / controls) |
+| `Super+/` | Toggle keybind cheatsheet |
+| `Super+M` | Toggle media controls |
+| `Super+J` | Toggle bar |
+| `Super+K` | Toggle on-screen keyboard |
+| `Super+G` | Toggle overlay |
+| `Super+V` | Clipboard history → clipboard |
+| `Super+Period` | Emoji picker → clipboard |
+| `Ctrl+Super+T` | Open wallpaper selector |
+| `Ctrl+Super+Alt+T` | Select random wallpaper |
+| `Ctrl+Super+R` | Restart shell widgets |
+| `Ctrl+Super+P` | Cycle panel family (ii ↔ Waffle) |
+| `Ctrl+Alt+Delete` | Toggle session menu |
+
+## Utilities
+
+| Keybind | Action |
+|---------|--------|
+| `Super+Shift+S` | Screen snip → clipboard |
+| `Super+Shift+A` | Google Lens image search |
+| `Super+Shift+X` | OCR → clipboard |
+| `Super+Shift+T` | Translate screen content |
+| `Super+Shift+C` | Color picker → clipboard |
+| `Super+Shift+R` | Record region (no audio) |
+| `Super+Shift+Alt+R` | Record screen with audio |
+| `Ctrl+Alt+R` | Record fullscreen (no audio) |
+| `Print` | Full-monitor screenshot → clipboard |
+| `Ctrl+Print` | Full-monitor screenshot → clipboard + file |
+
+## Windows
+
+| Keybind | Action |
+|---------|--------|
+| `Super+Q` | Close active window |
+| `Super+D` | Maximize |
+| `Super+F` | Fullscreen |
+| `Super+Alt+F` | Fullscreen spoof (fake fullscreen) |
+| `Super+P` | Pin window |
+| `Super+Alt+Space` | Toggle float / tile |
+| `Super+Arrow keys` | Focus window in direction |
+| `Super+Shift+Arrow keys` | Move window in direction |
+| `Super+;` / `Super+'` | Adjust split ratio |
+| `Super+Alt+S` | Send to scratchpad |
+| `Super+S` | Toggle scratchpad |
+| `Super+Shift+Alt+Q` | Force-kill a window (click to select) |
+| `Super+drag (LMB)` | Move window |
+| `Super+drag (RMB)` | Resize window |
+
+## Workspaces
+
+| Keybind | Action |
+|---------|--------|
+| `Super+1–10` | Switch to workspace 1–10 |
+| `Super+Alt+1–10` | Send active window to workspace 1–10 |
+| `Ctrl+Super+→` / `←` | Focus next / previous workspace |
+| `Super+Page Up/Down` | Focus next / previous workspace |
+| `Super+Scroll` | Focus next / previous workspace |
+| `Super+Shift+Scroll` | Send window to next / previous workspace |
+| `Ctrl+Super+Up/Down` | Jump 5 workspaces |
+
+## Session
+
+| Keybind | Action |
+|---------|--------|
+| `Super+L` | Lock screen |
+| `Super+Shift+L` | Suspend system |
+| `Ctrl+Alt+Delete` | Session menu (lock / logout / sleep / shutdown) |
+
+## Media
+
+| Keybind | Action |
+|---------|--------|
+| `Super+Shift+P` | Play / pause |
+| `Super+Shift+N` | Next track |
+| `Super+Shift+B` | Previous track |
+| `XF86AudioRaiseVolume` | Volume up 2% |
+| `XF86AudioLowerVolume` | Volume down 2% |
+| `XF86AudioMute` | Toggle mute (sink) |
+| `Alt+XF86AudioMute` | Toggle mute (microphone) |
+| `XF86MonBrightnessUp` | Brightness up 5% |
+| `XF86MonBrightnessDown` | Brightness down 5% |
+| `Super+Minus` / `Super+Equal` | Zoom out / in |
+
+## App launchers
+
+| Keybind | Action |
+|---------|--------|
+| `Super+Enter` or `Super+T` | Terminal |
+| `Ctrl+Alt+T` | Terminal (Ubuntu-style alias) |
+| `Super+E` | File manager |
+| `Super+W` | Browser |
+| `Super+C` | Code editor |
+| `Super+X` | Text editor |
+| `Super+I` | Settings app |
+| `Ctrl+Super+V` | Volume mixer |
+| `Ctrl+Shift+Escape` | Task manager |
+
+These app variables are set in `~/.config/hypr/hyprland/variables.conf` and can be overridden in `~/.config/hypr/custom/variables.conf`:
+
+```ini
+$terminal    = kitty -1
+$fileManager = dolphin
+$browser     = firefox
+$codeEditor  = code
+```
+
+## Virtual machine mode
+
+Press `Super+Alt+F1` to enter the virtual machine submap — all Hyprland keybinds are disabled so you can interact with the VM freely. Press `Super+Alt+F1` again to re-enable them.
+
+## Customizing keybinds
+
+Add your own binds to `~/.config/hypr/custom/keybinds.conf`:
+
+```ini custom/keybinds.conf
+# Example: open a browser with Super+B
+bind = Super, B, exec, firefox
+
+# Example: launch a scratchpad terminal
+bind = Super+Alt, T, exec, kitty --class scratchpad
+```
+
+This file is never overwritten by updates.

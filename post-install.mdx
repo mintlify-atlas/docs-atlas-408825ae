@@ -1,0 +1,87 @@
+---
+title: "First steps after installing illogical-impulse"
+description: "How to launch Hyprland, navigate the first-run experience, learn the essential keybinds, pick a wallpaper, and verify your installation is working."
+---
+
+Once the installer finishes, your configuration files are in place and all services are running. The next step is to start Hyprland and get familiar with the shell. This page covers everything you need to know in the first few minutes: launching the compositor, the initial setup experience, the keybinds you need immediately, and how to troubleshoot if something is wrong.
+
+## Launching Hyprland
+
+<Steps>
+  <Step title="Start Hyprland">
+    Start Hyprland from your display manager by selecting the **Hyprland** session. If you are using a display manager, **do not select the UWSM session** — select plain Hyprland.
+
+    Alternatively, if you are at a TTY, run:
+
+    ```bash
+    Hyprland
+    ```
+
+    The Quickshell widget system starts automatically as part of the Hyprland session.
+  </Step>
+  <Step title="Check the first-run experience">
+    On first launch, a welcome screen may appear with an overview of the shell. The shell reads the first-run state from a marker file; you can reset it at any time with:
+
+    ```bash
+    ./setup resetfirstrun
+    ```
+
+    If the shell does not appear at all, check that the `ILLOGICAL_IMPULSE_VIRTUAL_ENV` environment variable is set. It should be defined in `~/.config/hypr/hyprland/env.conf` and must be included in your `hyprland.conf`. A Hyprland restart is required for environment variables to take effect.
+  </Step>
+  <Step title="Learn the essential keybinds">
+    The keybind cheatsheet is always one keypress away. The most important binds to know immediately:
+
+    | Keybind | Action |
+    |---|---|
+    | `Super+/` | Open the keybind cheatsheet |
+    | `Super+Enter` | Open a terminal (Kitty) |
+    | `Super` (tap) | Toggle the search launcher |
+    | `Super+A` | Toggle the left sidebar (AI, settings) |
+    | `Super+N` | Toggle the right sidebar (notifications, quick toggles) |
+    | `Super+Tab` | Toggle the workspace overview |
+    | `Ctrl+Super+T` | Open the wallpaper selector |
+    | `Ctrl+Super+P` | Cycle to the next panel family |
+    | `Super+Q` | Close the focused window |
+    | `Super+L` | Lock the screen |
+
+    For the full keybind reference, press `Super+/` inside Hyprland.
+  </Step>
+  <Step title="Pick a wallpaper">
+    Press `Ctrl+Super+T` to open the wallpaper selector. Choose any image from your file system. As soon as you confirm, matugen generates a Material Design 3 color palette from that image and applies it to the entire shell — the bar, sidebars, notifications, and lock screen all recolor instantly.
+
+    If you want a random wallpaper applied without opening the selector, press `Ctrl+Super+Alt+T`.
+
+    <Tip>
+      Put your wallpaper images in `~/Pictures` so they are easy to find in the selector.
+    </Tip>
+  </Step>
+  <Step title="Explore the AI sidebar">
+    Press `Super+A` to open the left sidebar. From here you can start a conversation with a configured AI model (Gemini, an OpenAI-compatible endpoint, or a local Ollama model). The sidebar also provides access to shell settings and other panels.
+  </Step>
+  <Step title="Switch the panel family">
+    By default, illogical-impulse uses its standard panel layout. Press `Ctrl+Super+P` to cycle to a different panel family. The Waffle layout provides a Windows 11-inspired taskbar and Action Center style experience.
+  </Step>
+</Steps>
+
+## If something does not look right
+
+If the shell is not loading, widgets are missing, or keybinds are not working, run the `diagnose` script from the repository root:
+
+```bash
+./diagnose
+```
+
+The script collects information about your environment — Hyprland version, installed packages, environment variables, Python virtual environment state, and git status — and saves the output to a `diagnose.result` file in the same directory. You can optionally upload the result to a temporary pastebin link for sharing when asking for help.
+
+<Note>
+  Do not run `diagnose` with `sudo` or as root. It must be run as your regular user.
+</Note>
+
+Common things to verify after installation:
+
+- The `ILLOGICAL_IMPULSE_VIRTUAL_ENV` variable is set and points to `~/.local/state/quickshell/.venv`.
+- Your `hyprland.conf` includes `~/.config/hypr/hyprland/env.conf`.
+- The `ydotool` user service is running: `systemctl --user status ydotool`.
+- You are logged in as your regular user, not via `su` or SSH without a proper session.
+
+For community support, join the [Discord server](https://discord.gg/GtdRBXgMwq). For confirmed bugs, open an issue on [GitHub](https://github.com/end-4/dots-hyprland).

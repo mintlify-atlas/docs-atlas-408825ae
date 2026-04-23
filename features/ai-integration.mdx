@@ -1,0 +1,193 @@
+---
+title: "AI sidebar: chat with Gemini, OpenAI, Ollama"
+description: "The illogical-impulse left sidebar includes a full AI chat interface supporting Gemini, OpenAI-compatible APIs, and local Ollama models."
+---
+
+The left sidebar in illogical-impulse ships with a full-featured AI chat panel. Press **Super+A** to open it. The panel connects to Google Gemini, any OpenAI-compatible endpoint (including OpenRouter, Mistral, and self-hosted servers), and locally running Ollama models — all from the same interface, with no external app required.
+
+## Supported providers
+
+<CardGroup cols={3}>
+  <Card title="Google Gemini" icon="google">
+    Gemini 2.5 Flash and Gemini 3 Flash are available out of the box. Supports Google Search grounding and function calling. Get a free key at [aistudio.google.com](https://aistudio.google.com/app/apikey).
+  </Card>
+  <Card title="OpenAI-compatible" icon="globe">
+    Any endpoint that speaks the OpenAI chat completions format works: OpenRouter, local llama.cpp servers, Mistral AI, and more. Add them via `extraModels` in the config.
+  </Card>
+  <Card title="Ollama (local)" icon="cpu">
+    Installed Ollama models are detected automatically on startup — no configuration needed. The sidebar queries `http://localhost:11434` and lists every model you have pulled.
+  </Card>
+</CardGroup>
+
+## Getting started
+
+<Steps>
+  <Step title="Open the sidebar">
+    Press **Super+A**. If the chat panel is empty, you will see a placeholder with a hint to type `/key`.
+  </Step>
+  <Step title="Set an API key">
+    Type `/key YOUR_API_KEY` in the input box and press Enter. The key is stored in the system keyring and persisted across sessions. To view the currently stored key, type `/key get`.
+  </Step>
+  <Step title="Pick a model">
+    Type `/model` followed by a model name. Tab completion and fuzzy search are supported — press Tab to autocomplete from the suggestion list, or use the arrow keys to navigate suggestions.
+  </Step>
+  <Step title="Start chatting">
+    Type your message and press Enter. Shift+Enter inserts a newline. The send button in the input box works the same way.
+  </Step>
+</Steps>
+
+## Chat slash commands
+
+All commands begin with `/`. Typing `/` alone shows the full list of available commands as suggestions.
+
+<AccordionGroup>
+  <Accordion title="/key — API key management">
+    | Usage | Effect |
+    |---|---|
+    | `/key YOUR_KEY` | Store the API key for the currently selected model |
+    | `/key get` | Print the stored key to the chat |
+
+    Each model uses a `key_id` to share keys across models that accept the same credential. For example, all Gemini models share the `gemini` key ID.
+  </Accordion>
+
+  <Accordion title="/model — switch models">
+    | Usage | Effect |
+    |---|---|
+    | `/model MODEL_ID` | Switch to the specified model |
+    | `/model` + Tab | Fuzzy-search models with tab completion |
+
+    Model IDs for built-in models include `gemini-2.5-flash`, `gemini-3-flash`, and `mistral-medium-3`. Ollama models appear automatically (e.g. `llama3_2`). Extra models added via config use the model string from the `model` field with `:` replaced by `_` and spaces replaced by `-`.
+  </Accordion>
+
+  <Accordion title="/prompt — system prompt">
+    | Usage | Effect |
+    |---|---|
+    | `/prompt` or `/prompt get` | Print the current system prompt |
+    | `/prompt /path/to/file.md` | Load a system prompt from a file |
+
+    Tab completion lists prompt files from the default prompts directory and `~/.config/illogical-impulse/ai/prompts/`.
+  </Accordion>
+
+  <Accordion title="/tool — select tool mode">
+    | Tool | Behaviour |
+    |---|---|
+    | `functions` | Shell commands, config editing, and web search (Gemini switches to search mode when needed) |
+    | `search` | Gives the model immediate Google Search capability (Gemini only) |
+    | `none` | Disables all tools |
+
+    Usage: `/tool functions`, `/tool search`, or `/tool none`. Tab completion is available.
+  </Accordion>
+
+  <Accordion title="/temp — response temperature">
+    Controls the randomness of model responses. Range is 0–2 for Gemini and 0–1 for other models. Default is `0.5`.
+
+    | Usage | Effect |
+    |---|---|
+    | `/temp 0.7` | Set temperature to 0.7 |
+    | `/temp get` | Print current temperature |
+
+    The current temperature is always visible in the status bar above the chat.
+  </Accordion>
+
+  <Accordion title="/save and /load — chat history">
+    | Usage | Effect |
+    |---|---|
+    | `/save my-chat` | Save the current chat to a named file |
+    | `/load my-chat` | Load a previously saved chat |
+
+    Tab completion lists existing saved chats. Chats are stored as JSON files. The current session is also auto-saved to `lastSession` after every response.
+  </Accordion>
+
+  <Accordion title="/clear — clear chat">
+    Clears all messages from the current session. Equivalent to pressing **Ctrl+Shift+O** anywhere in the sidebar.
+  </Accordion>
+
+  <Accordion title="/attach — attach a file (Gemini only)">
+    | Usage | Effect |
+    |---|---|
+    | `/attach /path/to/file` | Queue a file for the next message |
+    | **Ctrl+V** in the input | Auto-attach an image from clipboard |
+    | **Esc** | Remove a pending attachment |
+
+    File attachment is only available with Gemini models. Paste an image with Ctrl+V (not Shift+Ctrl+V, which pastes text). An indicator above the input shows the pending file.
+  </Accordion>
+
+  <Accordion title="/test — markdown preview">
+    Inserts a test message that demonstrates formatting capabilities: italic, bold, inline code, tables, code blocks with syntax highlighting, and LaTeX rendering.
+  </Accordion>
+</AccordionGroup>
+
+## Status bar
+
+The status bar above the message list shows at a glance:
+
+- **Key icon** — whether an API key is set for the current model (`key` vs `key_off`)
+- **Temperature** — current temperature value with a thermometer icon
+- **Token count** — total, input, and output token counts, shown after the first response
+
+Hover over any item for a tooltip with more detail.
+
+## Adding custom models
+
+Add extra models under `ai.extraModels` in your config file (`~/.config/illogical-impulse/config.json`). Below is the example from the default config — a free DeepSeek R1 model via OpenRouter:
+
+```json
+"ai": {
+  "extraModels": [
+    {
+      "api_format": "openai",
+      "description": "This is a custom model. Edit the config to add more! | Anyway, this is DeepSeek R1 Distill LLaMA 70B",
+      "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+      "homepage": "https://openrouter.ai/deepseek/deepseek-r1-distill-llama-70b:free",
+      "icon": "spark-symbolic",
+      "key_get_link": "https://openrouter.ai/settings/keys",
+      "key_id": "openrouter",
+      "model": "deepseek/deepseek-r1-distill-llama-70b:free",
+      "name": "Custom: DS R1 Dstl. LLaMA 70B",
+      "requires_key": true
+    }
+  ]
+}
+```
+
+Each entry in `extraModels` supports these fields:
+
+| Field | Required | Description |
+|---|---|---|
+| `api_format` | Yes | `"openai"` for most providers, `"gemini"` for Google, `"mistral"` for Mistral |
+| `model` | Yes | Model identifier sent in the API request |
+| `endpoint` | Yes | Full URL of the chat completions endpoint |
+| `name` | Yes | Display name shown in the UI |
+| `requires_key` | Yes | `true` if an API key is needed |
+| `key_id` | If keyed | Identifier for the stored key (shared across models with the same key) |
+| `description` | No | Text shown in model selector suggestions |
+| `homepage` | No | Link to the model or provider page |
+| `icon` | No | Icon name for the model logo |
+| `key_get_link` | No | URL where users can obtain a key |
+
+## System prompt
+
+The default system prompt is configured under `ai.systemPrompt` in the config and includes live context substitutions:
+
+| Placeholder | Replaced with |
+|---|---|
+| `{DISTRO}` | Linux distribution name |
+| `{DATETIME}` | Current time and date |
+| `{WINDOWCLASS}` | App ID of the focused window |
+| `{DE}` | Desktop environment and windowing system |
+
+The default prompt instructs the model to use a casual tone, prefer bullet points and tables, apply Markdown formatting with headers and bold keywords, and use LaTeX for math notation.
+
+You can override the prompt entirely by editing `ai.systemPrompt` in the config, or load a prompt file at runtime with `/prompt`.
+
+## AI policy
+
+The `policies.ai` option controls which models are accessible:
+
+| Value | Meaning |
+|---|---|
+| `0` | AI disabled entirely |
+| `1` | All models allowed (default) |
+| `2` | Local models only (Ollama); online models are blocked |
+
+The `sidebar.ai.textFadeIn` option (boolean) enables a fade-in animation as the model streams a response.

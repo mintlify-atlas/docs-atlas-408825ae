@@ -1,0 +1,145 @@
+---
+title: "Screen utilities: OCR, translation, Lens, recording"
+description: "Capture, recognize text, translate, search with Google Lens, and record your screen directly from illogical-impulse using built-in keybinds."
+---
+
+illogical-impulse bundles a full set of screen utilities accessible through keybinds — no separate app launcher needed. You can snip a region, run OCR, translate on-screen text, open a Google Lens search, pick colors, and record video, all without leaving your workflow.
+
+## Region screenshot
+
+Press `Super+Shift+S` to activate the region selector. Draw a rectangle over any part of your screen; the image is copied to your clipboard automatically.
+
+To also save the file to disk, set a save path in your config:
+
+```json
+{
+  "screenSnip": {
+    "savePath": "/home/you/Pictures/Screenshots"
+  }
+}
+```
+
+Leave `savePath` empty (the default) to copy to clipboard only.
+
+For a **fullscreen screenshot**, press `Print` — copies the active monitor to clipboard. Add `Ctrl` to also save the file to `~/Pictures/Screenshots/`.
+
+## OCR — text recognition to clipboard
+
+Press `Super+Shift+X` to draw a selection. illogical-impulse runs `tesseract` on the captured region and copies the recognized text to your clipboard. All installed tesseract language packs are used automatically.
+
+<Note>
+  OCR requires `tesseract` and at least one language data package (e.g. `tesseract-data-eng`). These are installed by the setup script on Arch.
+</Note>
+
+## Screen translation
+
+Press `Super+Shift+T` to select a region. The text in that region is recognized with OCR and then translated using `translate-shell`. The translated text is shown in an overlay on screen.
+
+Configure the translation language in your config:
+
+```json
+{
+  "language": {
+    "translator": {
+      "engine": "auto",
+      "targetLanguage": "auto",
+      "sourceLanguage": "auto"
+    }
+  }
+}
+```
+
+Run `trans -list-engines` for available engines and `trans -list-all` for available language codes.
+
+## Google Lens image search
+
+Press `Super+Shift+A` to select a region. The captured image is sent to Google Lens for visual search — useful for identifying objects, translating text in images, or reverse image searching.
+
+The image search engine URL is configurable:
+
+```json
+{
+  "search": {
+    "imageSearch": {
+      "imageSearchEngineBaseUrl": "https://lens.google.com/uploadbyurl?url=",
+      "useCircleSelection": false
+    }
+  }
+}
+```
+
+## Color picker
+
+Press `Super+Shift+C` to launch `hyprpicker`. Click anywhere on screen to sample that pixel's color. The hex color code is copied to your clipboard.
+
+## Screen recording
+
+<CardGroup cols={2}>
+  <Card title="Record a region (no audio)" icon="video">
+    `Super+Shift+R` — select a region with the region selector, then recording begins.
+  </Card>
+  <Card title="Record screen with audio" icon="microphone">
+    `Super+Shift+Alt+R` — records the full screen including audio output.
+  </Card>
+  <Card title="Record fullscreen (no audio)" icon="display">
+    `Ctrl+Alt+R` — immediately starts recording the full screen.
+  </Card>
+</CardGroup>
+
+Recordings are saved to the path set in your config (defaults to `~/Videos`):
+
+```json
+{
+  "screenRecord": {
+    "savePath": "/home/you/Videos"
+  }
+}
+```
+
+Recording uses `wf-recorder` under the hood.
+
+## Region selector options
+
+The region selector used for screenshots, OCR, and recording can be configured:
+
+```json
+{
+  "regionSelector": {
+    "targetRegions": {
+      "windows": true,
+      "layers": false,
+      "content": true,
+      "showLabel": false,
+      "opacity": 0.3,
+      "contentRegionOpacity": 0.8,
+      "selectionPadding": 5
+    },
+    "rect": {
+      "showAimLines": true
+    },
+    "circle": {
+      "strokeWidth": 6,
+      "padding": 10
+    },
+    "annotation": {
+      "useSatty": false
+    }
+  }
+}
+```
+
+## Dependencies
+
+| Tool | Purpose |
+|------|---------|
+| `tesseract` | OCR engine for text recognition |
+| `tesseract-data-eng` | English language data (others available) |
+| `translate-shell` | Screen translation |
+| `slurp` | Region selection UI |
+| `grim` | Wayland screenshot tool |
+| `wf-recorder` | Wayland screen recording |
+| `hyprpicker` | Color picker |
+| `swappy` | Screenshot annotation (optional) |
+| `hyprshot` | Fallback screenshot tool |
+
+All of these are installed automatically by `./setup install`.

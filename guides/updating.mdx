@@ -1,0 +1,84 @@
+---
+title: "Updating and uninstalling illogical-impulse"
+description: "Update illogical-impulse to the latest version, use the experimental updater, merge upstream changes with local edits, and uninstall the dotfiles."
+---
+
+illogical-impulse provides multiple update paths depending on how much you've customized the config files. The standard method is a full reinstall (which is safe and idempotent), while the experimental options are better suited for users who have made local edits they want to preserve.
+
+## Standard update
+
+The recommended way to update is to pull the latest changes from the repository and re-run the install:
+
+<Steps>
+  <Step title="Stash any local changes">
+    If you have modified files tracked by git (not your `custom/` configs), stash them first:
+
+    ```bash
+    git stash
+    ```
+  </Step>
+  <Step title="Pull the latest changes">
+    ```bash
+    git pull
+    ```
+  </Step>
+  <Step title="Re-run the installer">
+    ```bash
+    ./setup install
+    ```
+
+    The install script is idempotent — it is safe to run multiple times. It will update dependencies, re-run setup steps that need updating, and copy the latest config files.
+  </Step>
+</Steps>
+
+## Experimental updater
+
+For a lighter update that doesn't go through the full install process:
+
+```bash
+./setup exp-update
+```
+
+<Warning>
+  The experimental updater is still under development. If something breaks, fall back to the standard update method.
+</Warning>
+
+## Preserving local customizations with exp-merge
+
+If you've made changes to files tracked by git (not just the `custom/` folder), use the experimental merge command to rebase your changes on top of the upstream:
+
+```bash
+./setup exp-merge
+```
+
+This runs a `git rebase` to replay your local commits on top of the pulled upstream changes. Conflicts may need manual resolution.
+
+<Tip>
+  The safest way to customize illogical-impulse without merge conflicts is to put all your changes in the `custom/` subdirectories (`~/.config/hypr/custom/`, etc.). These files are never overwritten by updates.
+</Tip>
+
+## Resetting first-run state
+
+If you want to trigger the first-run experience again (e.g. after a major update):
+
+```bash
+./setup resetfirstrun
+```
+
+## Uninstalling
+
+To remove illogical-impulse:
+
+```bash
+./setup uninstall
+```
+
+This removes the configuration files that were copied during install. It does not remove installed packages — you'll need to uninstall those manually if desired.
+
+## Checking available subcommands
+
+Run `./setup help` for the full list of available subcommands and options:
+
+```bash
+./setup help
+```
